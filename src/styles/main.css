@@ -413,6 +413,10 @@ section {
     text-align: center;
 }
 
+.work {
+    height: 100vh;
+}
+
 .project-titles-list {
     display: flex;
     flex-direction: column;
@@ -424,7 +428,7 @@ section {
     align-items: flex-start;
     /* border: 2px solid blue; */
     /* Disable pointer events for the project-titles-list */
-    /* pointer-events: none; */
+    /* pointer-events: none; */   
 }
 
 .project-title {

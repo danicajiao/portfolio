@@ -34,7 +34,7 @@ function init() {
     initCursor();
 
     // Initialize 3D scenes
-    // initHeroScene();
+    initHeroScene();
     initSkillsScene();
 
     // Initialize project hover effects with GSAP
@@ -170,10 +170,10 @@ function initNavigation() {
 
     window.addEventListener('scroll', () => {
         // Only change nav color on scroll if no project is being hovered
-        if (!projectHovered) {
+        // if (!projectHovered) {
             if (window.scrollY > 100) {
                 gsap.to(nav, {
-                    backgroundColor: '#ffffffe6',
+                    // backgroundColor: '#ffffffe6',
                     backdropFilter: 'blur(10px)',
                     padding: '1rem 0',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
@@ -181,14 +181,14 @@ function initNavigation() {
                 });
             } else {
                 gsap.to(nav, {
-                    backgroundColor: 'transparent',
+                    // backgroundColor: 'transparent',
                     backdropFilter: 'none',
                     padding: '2rem 0',
                     boxShadow: 'none',
                     duration: 0.3
                 });
             }
-        }
+        // }
     });
 }
 
@@ -254,7 +254,11 @@ function initAnimations() {
 
     // Projects animation setup
     gsap.utils.toArray('.project-titles-list a').forEach(project => {
-        gsap.set(project, { y: 50, opacity: 0 });
+        gsap.set(project, { 
+            y: 50,
+            opacity: 0,
+            pointerEvents: 'none' // Disable pointer events initially 
+        });
     });
 
     // About section elements
@@ -334,7 +338,7 @@ function startPageAnimations() {
             y: 0,
             opacity: 1,
             duration: 1,
-            ease: 'power3.out'
+            ease: 'power3.out',
         });
     });
 
@@ -350,7 +354,10 @@ function startPageAnimations() {
             opacity: 1,
             duration: 1,
             delay: index * 0.2,
-            ease: 'power3.out'
+            ease: 'power3.out',
+            onComplete: () => {
+                project.style.pointerEvents = 'auto'; // Enable pointer events after animation
+            }
         });
     });
 
@@ -423,96 +430,92 @@ function startPageAnimations() {
     });
 }
 
-// Hero background scene with Three.js
+// Hero background scene with Conway's Game of Life
 function initHeroScene() {
     const heroCanvas = document.getElementById('hero-canvas');
-
     if (!heroCanvas) return;
 
-    // Scene, camera and renderer
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Set canvas size
+    heroCanvas.width = window.innerWidth;
+    heroCanvas.height = window.innerHeight;
+    const ctx = heroCanvas.getContext('2d');
 
-    // Create particles
-    const particleGeometry = new THREE.BufferGeometry();
-    const particleCount = 2000;
+    // Game of Life settings
+    const cellSize = 10;
+    const cols = Math.floor(heroCanvas.width / cellSize);
+    const rows = Math.floor(heroCanvas.height / cellSize);
+    let grid = createRandomGrid(cols, rows);
 
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
-
-    const colorOptions = [
-        new THREE.Color('#4f46e5'), // Main accent color
-        new THREE.Color('#818cf8'), // Lighter variant
-        new THREE.Color('#3730a3'), // Darker variant
-        new THREE.Color('#ffffff')  // White
-    ];
-
-    // Create particles with random positions
-    for (let i = 0; i < particleCount; i++) {
-        // Position
-        positions[i * 3] = (Math.random() - 0.5) * 10;     // x
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 10; // y
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 10; // z
-
-        // Random color from options
-        const color = colorOptions[Math.floor(Math.random() * colorOptions.length)];
-        colors[i * 3] = color.r;
-        colors[i * 3 + 1] = color.g;
-        colors[i * 3 + 2] = color.b;
+    function createRandomGrid(cols, rows) {
+        const arr = [];
+        for (let y = 0; y < rows; y++) {
+            arr[y] = [];
+            for (let x = 0; x < cols; x++) {
+                // Place most live cells near the edges, few in the center
+                const edgeThreshold = 5; // Number of cells from edge considered 'edge'
+                const isEdge = x < edgeThreshold || x >= cols - edgeThreshold || y < edgeThreshold || y >= rows - edgeThreshold;
+                if (isEdge) {
+                    arr[y][x] = Math.random() > 0.5 ? 1 : 0; // 50% chance alive on edge
+                } else {
+                    arr[y][x] = 0; // 0% chance alive in center
+                }
+            }
+        }
+        return arr;
     }
 
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    function drawGrid() {
+        ctx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                if (grid[y][x]) {
+                    ctx.fillStyle = '#00000010'; // Even lighter transparent black (0x10 = ~6% opacity)
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+    }
 
-    // Material with custom shaders for better-looking particles
-    const particleMaterial = new THREE.PointsMaterial({
-        size: 0.05,
-        sizeAttenuation: true,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.7
-    });
+    function nextGeneration() {
+        const newGrid = [];
+        for (let y = 0; y < rows; y++) {
+            newGrid[y] = [];
+            for (let x = 0; x < cols; x++) {
+                let neighbors = 0;
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        if (i === 0 && j === 0) continue;
+                        const nx = x + j;
+                        const ny = y + i;
+                        if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                            neighbors += grid[ny][nx];
+                        }
+                    }
+                }
+                if (grid[y][x] === 1) {
+                    newGrid[y][x] = neighbors === 2 || neighbors === 3 ? 1 : 0;
+                } else {
+                    newGrid[y][x] = neighbors === 3 ? 1 : 0;
+                }
+            }
+        }
+        grid = newGrid;
+    }
 
-    // Create particle system
-    particles = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(particles);
-
-    // Position camera
-    camera.position.z = 3;
-
-    // Animation
-    const animate = () => {
-        requestAnimationFrame(animate);
-
-        // Rotate particles slowly
-        particles.rotation.x += 0.0005;
-        particles.rotation.y += 0.001;
-
-        // Mouse movement effect (to be connected to mouse position)
-        const mouseX = (window.innerWidth / 2 - (window.scrollY * 0.3)) * 0.0003;
-        const mouseY = (window.innerHeight / 2) * 0.0003;
-
-        particles.rotation.x += (mouseY - particles.rotation.x) * 0.05;
-        particles.rotation.y += (mouseX - particles.rotation.y) * 0.05;
-
-        // Render scene
-        renderer.render(scene, camera);
-    };
+    function animate() {
+        drawGrid();
+        setTimeout(() => {
+            nextGeneration();
+            requestAnimationFrame(animate);
+        }, 100); // 100ms per generation (adjust as desired)
+    }
 
     animate();
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        // Update camera
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-
-        // Update renderer
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        heroCanvas.width = window.innerWidth;
+        heroCanvas.height = window.innerHeight;
     });
 }
 
@@ -522,6 +525,7 @@ function initProjectHovers() {
     const visualBlock = document.querySelector('.project-visual-block');
     const projectList = document.querySelector('.project-titles-list');
     const nav = document.querySelector('.nav');
+    const heroCanvas = document.getElementById('hero-canvas');
 
     // Define project colors
     const projectColors = {
@@ -553,7 +557,7 @@ function initProjectHovers() {
         const projectId = link.id.replace('-link', '');
 
         // Mouse enter animation
-        link.addEventListener('mouseenter', () => {
+        link.addEventListener('mouseenter', (event) => {
             // If a project is already hovered, don't do anything
             if (!projectHovered) projectHovered = true;
 
@@ -586,15 +590,14 @@ function initProjectHovers() {
                 );
             }
 
-            // Smoothly transition body background color
-            gsap.to('body', {
-                backgroundColor: projectColors[projectId],
-                duration: 0.2,
+            gsap.to(heroCanvas, {
+                opacity: 0,
+                duration: 0.4,
                 ease: 'power2.inOut'
             });
 
-            // Smoothly transition nav background color
-            gsap.to(nav, {
+            // Smoothly transition body background color
+            gsap.to('body', {
                 backgroundColor: projectColors[projectId],
                 duration: 0.2,
                 ease: 'power2.inOut'
@@ -645,13 +648,25 @@ function initProjectHovers() {
         });
 
         // Reset the project link on mouse leave
-        link.addEventListener('mouseleave', () => {
+        link.addEventListener('mouseleave', (event) => {
             projectHovered = false;
+
+            console.log(event.target);
+            console.log(event.relatedTarget);
 
             gsap.killTweensOf('body');
             gsap.killTweensOf(nav);
             gsap.killTweensOf(visualBlock);
+            gsap.killTweensOf(heroCanvas);
 
+            // If the mouse is leaving the project link and not going to another project link
+            if ( event.target.classList.contains('project-title') !== event.relatedTarget.classList.contains('project-title') ) {
+                // Reset state
+                gsap.set('body', { backgroundColor: '#ffffff' });
+                // gsap.set(nav, { backgroundColor: '#ffffff' });
+                gsap.set(visualBlock, { opacity: 0 });
+                gsap.set(heroCanvas, { opacity: 1 });
+            }
             // Reset underline
             if (link.querySelector('.link-underline')) {
                 gsap.to(link.querySelector('.link-underline'), {
@@ -659,31 +674,10 @@ function initProjectHovers() {
                     duration: 0.3,
                     transformOrigin: 'right',
                     ease: 'power2.inOut',
-                    // onComplete: () => {
-                    //     gsap.set(link.querySelector('.link-underline'), { transformOrigin: 'left' });
-                    // }
                 });
             }
-
-            gsap.set('body', { backgroundColor: '#ffffff' });
-            gsap.set(nav, { backgroundColor: '#ffffff' });
-            gsap.set(visualBlock, { opacity: 0 });
         });
     });
-
-    // When mouse leaves the entire project list area
-    // projectList.addEventListener('mouseleave', () => {
-    //     // Reset state
-    //     activeProjectId = null;
-
-    //     gsap.killTweensOf('body');
-    //     gsap.killTweensOf(nav);
-    //     gsap.killTweensOf(visualBlock);
-
-    //     gsap.set('body', { backgroundColor: '#ffffff' });
-    //     gsap.set(nav, { backgroundColor: '#ffffff' });
-    //     gsap.set(visualBlock, { opacity: 0 });
-    // });
 }
 
 // Skills scene with Three.js
