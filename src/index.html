@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>danielcajiao | Software Engineer</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Personal portfolio showcasing software engineering projects and skills">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div class="loader">
+        <div class="loader-inner">
+            <div class="loader-circle"></div>
+            <div class="loader-progress">0%</div>
+        </div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor">
+        <!-- <div class="cursor-circle"></div> -->
+        <div class="cursor-dot"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="logo">
+                <a href="#hero">daniel/cajiao</a>
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links">
+                <div class="nav-links-inner">
+                    <a href="#work" class="nav-link">work</a>
+                    <a href="#about" class="nav-link">about</a>
+                    <a href="#skills" class="nav-link">skills</a>
+                    <a href="#contact" class="nav-link">contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with 3D Background -->
+    <section id="hero" class="hero">
+        <!-- <div class="hero-canvas-container">
+            <canvas id="hero-canvas"></canvas>
+        </div> -->
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hero-title-line">Hello, I'm <span class="hero-title-highlight">Daniel.</span></span>
+                <span class="hero-title-line">Software Engineer &</span>
+                <span class="hero-title-line">Creative Developer</span>
+            </h1>
+            <p class="hero-description">
+                Building innovative digital experiences with code and creativity
+            </p>
+            <div class="hero-cta">
+                <a href="#work" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll Down</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <section id="work" class="work">
+        <div class="project-titles-list">
+            <a href="#project1" id="charles-schwab-link" class="project-title">Charles Schwab</a>
+            <a href="#project2" id="cove-link" class="project-title">Cove</a>
+            <a href="#project3" id="schwapp-link" class="project-title">SchwApp</a>
+            <a href="#project4" id="safelinc-link" class="project-title">SafeLINC</a>
+            <a href="#project5" id="letics-link" class="project-title">Letics</a>
+        </div>
+
+        <div class="project-visual-block">
+            <!-- Each project will have its own visual content -->
+            <div class="project-visual" id="charles-schwab-visual">
+                <img src="./assets/images/Charles_Schwab_Corporation_logo.svg.png" alt="Charles Schwab Project">
+                <!-- Add more content here in the future -->
+            </div>
+            <div class="project-visual" id="cove-visual">
+                <img src="./assets/images/Group 3.png" alt="Cove Project">
+                <img src="./assets/images/Group 4.png" alt="Cove Project">
+            </div>
+            <div class="project-visual" id="schwapp-visual">
+                <img src="./assets/images/projects/schwapp.jpg" alt="SchwApp Project">
+            </div>
+            <div class="project-visual" id="safelinc-visual">
+                <img src="./assets/images/projects/safelinc.jpg" alt="SafeLINC Project">
+            </div>
+            <div class="project-visual" id="letics-visual">
+                <img src="./assets/images/projects/letics.jpg" alt="Letics Project">
+            </div>
+        </div>
+
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-image">
+                    <div class="about-image-wrapper">
+                        <img src="./assets/images/profile-placeholder.jpg" alt="Your Name">
+                    </div>
+                </div>
+                <div class="about-text">
+                    <h2 class="section-title">About Me</h2>
+                    <p>
+                        Hello, I'm Daniel Cajiao. A software engineer passionate about building elegant solutions to
+                        complexproblems. With a background in Enterprise CI/CD and Mobile Development, I focus on
+                        creating intuitive and efficient applications that solve real-world challenges.
+                    </p>
+                    <p>
+                        When I'm not coding, I enjoy music and gaming. I believe that diverse experiences fuel
+                        creativity and innovation in tech.
+                    </p>
+                    <p>
+                        I'm currently working as a software developer at Charles Schwab. Feel free to reach out if
+                        you'd like to collaborate or just chat about technology and innovation.
+                    </p>
+                    <div class="about-cta">
+                        <a href="#contact" class="btn btn-primary">Get in Touch</a>
+                        <a href="./assets/resume.pdf" class="btn btn-secondary" download>Download CV</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section with 3D Visualization -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">Skills & Expertise</h2>
+            <div class="skills-content">
+                <div class="skills-text">
+                    <div class="skills-category">
+                        <h3>Languages</h3>
+                        <ul class="skills-list">
+                            <li>JavaScript</li>
+                            <li>TypeScript</li>
+                            <li>Python</li>
+                            <li>HTML5/CSS3</li>
+                            <li>SQL</li>
+                        </ul>
+                    </div>
+                    <div class="skills-category">
+                        <h3>Frameworks & Libraries</h3>
+                        <ul class="skills-list">
+                            <li>React</li>
+                            <li>Node.js</li>
+                            <li>Next.js</li>
+                            <li>Express</li>
+                            <li>Three.js</li>
+                            <li>GSAP</li>
+                        </ul>
+                    </div>
+                    <div class="skills-category">
+                        <h3>Tools & Platforms</h3>
+                        <ul class="skills-list">
+                            <li>Git/GitHub</li>
+                            <li>Docker</li>
+                            <li>AWS</li>
+                            <li>Firebase</li>
+                            <li>Figma</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="skills-visual">
+                    <canvas id="skills-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <p>I'm always open to discussing new projects, creative ideas, or opportunities to be part of your
+                        vision.</p>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <span class="contact-label">Email</span>
+                            <a href="mailto:cajiao.dani@gmail.com" class="contact-link">cajiao.dani@gmail.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Based in</span>
+                            <span>denver, co</span>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://github.com/yourusername" target="_blank" class="social-link">GitHub</a>
+                        <a href="https://linkedin.com/in/yourusername" target="_blank" class="social-link">LinkedIn</a>
+                        <a href="https://twitter.com/yourusername" target="_blank" class="social-link">Twitter</a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <a href="#hero">daniel/cajiao</a>
+                </div>
+                <div class="footer-links">
+                    <a href="#work">work</a>
+                    <a href="#about">about</a>
+                    <a href="#skills">skills</a>
+                    <a href="#contact">contact</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Daniel Cajiao. All rights reserved.</p>
+                <p>Designed & built with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/main.js"></script>
+</body>
+
+</html>
