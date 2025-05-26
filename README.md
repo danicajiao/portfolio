@@ -83,30 +83,6 @@ portfolio/
 └── vite.config.js          # Vite configuration
 ```
 
-## Customization
-
-### Personal Information
-
-Update your personal information in `index.html` including:
-- Your name
-- Job title/description
-- About me section
-- Project details
-- Skills
-- Contact information
-
-### Colors and Styles
-
-The main color scheme and styling variables can be found at the top of `src/styles/main.css` in the `:root` selector.
-
-### Projects
-
-Add your own projects in the "Work" section of `index.html`. Each project should follow the structure of the example projects.
-
-### 3D Graphics
-
-The Three.js scenes can be customized in `src/js/main.js`. Look for the `initHeroScene()` and `initSkillsScene()` functions.
-
 ## License
 
 MIT License
