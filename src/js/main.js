@@ -24,6 +24,9 @@ let projectHovered = false;
 // Initialize page when loaded
 window.addEventListener('load', init);
 function init() {
+    // Initialize theme listener for dark mode support
+    initThemeListener();
+
     // Initialize smooth scrolling first
     // initSmoothScroll();
 
@@ -35,9 +38,7 @@ function init() {
 
     // Initialize 3D scenes
     initHeroScene();
-    initSkillsScene();
-
-    // Initialize project hover effects with GSAP
+    initSkillsScene();    // Initialize project hover effects with GSAP
     initProjectHovers();
 
     // Initialize interactive elements
@@ -45,10 +46,123 @@ function init() {
     initForm();
 
     // Force ScrollTrigger to recalculate all scrollbar-related measurements
-    ScrollTrigger.refresh(true);
+    // ScrollTrigger.refresh(true);
 
     // Start loading sequence (will trigger animations when complete)
     startLoadingSequence();
+}
+
+function initThemeListener() {
+    // Listen for changes in the user's color scheme preference
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // Define color transitions based on theme
+    const colors = {
+        light: {
+            bgPrimary: '#ffffff',
+            bgSecondary: '#e8e8e8',
+            textPrimary: '#333333',
+            textSecondary: '#aaaaaa',
+            border: '#333333',
+            sphereColor: 0x4f46e5
+        },
+        dark: {
+            bgPrimary: '#121212',
+            bgSecondary: '#1e1e1e', 
+            textPrimary: '#e0e0e0',
+            textSecondary: '#a0a0a0',
+            border: '#444444',
+            sphereColor: 0x00e18f
+        }
+    };
+
+    // Set initial colors based on current preference
+    const isDarkMode = mediaQuery.matches;
+    const initialColors = isDarkMode ? colors.dark : colors.light;
+
+    // Set initial body background explicitly (this gives GSAP a starting point)
+    gsap.set('body', { backgroundColor: initialColors.bgPrimary });
+
+    // Set initial Three.js colors if sphere exists
+    if (skillsSphere) {
+        skillsSphere.material.color.setHex(initialColors.sphereColor);
+        skillsSphere.material.emissive.setHex(initialColors.sphereColor);
+    }
+
+    mediaQuery.addEventListener('change', (e) => {
+        const isDarkMode = e.matches;
+        const targetColors = isDarkMode ? colors.dark : colors.light;
+
+        // Only transition if no project is currently hovered
+        if (!projectHovered) {
+            // Smooth transition for body background
+            gsap.to('body', {
+                backgroundColor: targetColors.bgPrimary,
+                duration: 0.6,
+                ease: 'power2.inOut'
+            });
+        }
+
+        // Update Three.js sphere colors smoothly
+        if (skillsSphere) {
+            // Get current color as RGB values
+            const currentColor = skillsSphere.material.color;
+            const currentEmissive = skillsSphere.material.emissive;
+            
+            // Create temporary objects to animate
+            const colorObj = { r: currentColor.r, g: currentColor.g, b: currentColor.b };
+            const emissiveObj = { r: currentEmissive.r, g: currentEmissive.g, b: currentEmissive.b };
+            
+            // Get target color as THREE.Color object
+            const targetColorObj = new THREE.Color(targetColors.sphereColor);
+            
+            // Animate the color transition
+            gsap.to(colorObj, {
+                r: targetColorObj.r,
+                g: targetColorObj.g,
+                b: targetColorObj.b,
+                duration: 0.8,
+                ease: 'power2.inOut',
+                onUpdate: () => {
+                    skillsSphere.material.color.setRGB(colorObj.r, colorObj.g, colorObj.b);
+                }
+            });
+
+            gsap.to(emissiveObj, {
+                r: targetColorObj.r,
+                g: targetColorObj.g, 
+                b: targetColorObj.b,
+                duration: 0.8,
+                ease: 'power2.inOut',
+                onUpdate: () => {
+                    skillsSphere.material.emissive.setRGB(emissiveObj.r, emissiveObj.g, emissiveObj.b);
+                }
+            });
+        }
+
+        // Update navigation background if it's currently visible (on scroll)
+        // const nav = document.querySelector('.nav');
+        // if (window.scrollY > 100) {
+        //     const navBg = isDarkMode ? 'rgba(18, 18, 18, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+        //     gsap.to(nav, {
+        //         backgroundColor: navBg,
+        //         duration: 0.6,
+        //         ease: 'power2.inOut'
+        //     });
+        // }
+
+        // Update any elements with transition classes
+        // const elementsToTransition = document.querySelectorAll('.loader, .cursor-dot');
+        // elementsToTransition.forEach(element => {
+        //     // Force a style recalculation to pick up new CSS custom properties
+        //     element.style.display = 'none';
+        //     element.offsetHeight; // Trigger reflow
+        //     element.style.display = '';
+        // });
+
+        // Refresh ScrollTrigger to pick up any new measurements
+        // ScrollTrigger.refresh(true);
+    });
 }
 
 // Smooth scrolling with Lenis
@@ -466,10 +580,15 @@ function initHeroScene() {
 
     function drawGrid() {
         ctx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+
+        // Check if dark mode is preferred
+        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const cellColor = isDark ? '#ffffff10' : '#00000010'; // Lighter transparent white (0x10 = ~6% opacity)
+
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
                 if (grid[y][x]) {
-                    ctx.fillStyle = '#00000010'; // Even lighter transparent black (0x10 = ~6% opacity)
+                    ctx.fillStyle = cellColor; // Even lighter transparent black (0x10 = ~6% opacity)
                     ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
                 }
             }
@@ -529,12 +648,31 @@ function initProjectHovers() {
 
     // Define project colors
     const projectColors = {
-        'charles-schwab': '#c7edff',
-        'cove': '#ffe6cb',
-        'schwapp': '#c7edff',
-        'safelinc': '#3FB550',
-        'letics': '#FF4B4B'
+        'charles-schwab': { 
+            light: '#c7edff',
+            dark: '#1a3a4a'
+        },
+        'cove': {
+            light: '#ffe6cb',
+            dark: '#4a3a1a'
+        },
+        'schwapp': {
+            light: '#c7edff',
+            dark: '#1a3a4a'
+        },
+        'safelinc': {
+            light: '#3FB550',
+            dark: '#2a4a32'
+        },
+        'letics': {
+            light: '#FF4B4B',
+            dark: '#4a2a2a'
+        }
     };
+
+    function prefersDarkMode() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
 
     // Track current state
     let activeProjectId = null;
@@ -572,6 +710,11 @@ function initProjectHovers() {
             // Update state
             activeProjectId = projectId;
 
+            // Get the appropriate color based on system preference
+            const isDark = prefersDarkMode();
+            const colorScheme = isDark ? 'dark' : 'light';
+            const backgroundColor = projectColors[projectId][colorScheme];
+
             // Hide all visuals
             document.querySelectorAll('.project-visual').forEach(visual => {
                 visual.style.opacity = 0;
@@ -581,7 +724,7 @@ function initProjectHovers() {
             const projectVisual = document.getElementById(`${projectId}-visual`);
             if (projectVisual) {
                 gsap.fromTo(projectVisual,
-                    { opacity: 0 }, // ✅ Only "from" properties
+                    { opacity: 0 }, // Only "from" properties
                     {
                         opacity: 1,
                         duration: 0.4,
@@ -598,7 +741,7 @@ function initProjectHovers() {
 
             // Smoothly transition body background color
             gsap.to('body', {
-                backgroundColor: projectColors[projectId],
+                backgroundColor: backgroundColor,
                 duration: 0.2,
                 ease: 'power2.inOut'
             });
@@ -659,14 +802,19 @@ function initProjectHovers() {
             gsap.killTweensOf(visualBlock);
             gsap.killTweensOf(heroCanvas);
 
+            // Reset to system default background
+            const isDark = prefersDarkMode();
+            const defaultBg = isDark ? '#121212' : '#ffffff';
+
             // If the mouse is leaving the project link and not going to another project link
             if ( event.target.classList.contains('project-title') !== event.relatedTarget.classList.contains('project-title') ) {
                 // Reset state
-                gsap.set('body', { backgroundColor: '#ffffff' });
+                gsap.set('body', { backgroundColor: defaultBg });
                 // gsap.set(nav, { backgroundColor: '#ffffff' });
                 gsap.set(visualBlock, { opacity: 0 });
                 gsap.set(heroCanvas, { opacity: 1 });
             }
+
             // Reset underline
             if (link.querySelector('.link-underline')) {
                 gsap.to(link.querySelector('.link-underline'), {

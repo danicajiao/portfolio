@@ -1,6 +1,6 @@
 /* main.css */
 :root {
-    /* Colors */
+    /* Light mode colors */
     --color-bg-primary: #ffffff;
     --color-bg-secondary: #e8e8e8;
     --color-text-primary: #333333;
@@ -8,6 +8,13 @@
     --color-accent: #00e18f;
     --color-accent-hover: #3aca95;
     --color-border: #333333;
+
+    /* Dark mode colors */
+    --color-bg-primary-dark: #121212;
+    --color-bg-secondary-dark: #1e1e1e;
+    --color-text-primary-dark: #e0e0e0;
+    --color-text-secondary-dark: #a0a0a0;
+    --color-border-dark: #444444;
 
     --schwab-bg: #c7edff;
     --cove-bg: #ffe9c7;
@@ -35,7 +42,7 @@
 }
 
 /* Dark theme colors */
-/* @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     :root {
         --color-bg-primary: #121212;
         --color-bg-secondary: #1e1e1e;
@@ -43,7 +50,7 @@
         --color-text-secondary: #a0a0a0;
         --color-border: #444444;
     }
-} */
+}
 
 /* Reset & Base Styles */
 *,
@@ -128,7 +135,7 @@ textarea {
 .loader-circle {
     width: 60px;
     height: 60px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid var(--color-text-secondary);
     border-top: 3px solid var(--color-accent);
     border-radius: 50%;
     margin-bottom: var(--spacing-md);
@@ -158,7 +165,7 @@ textarea {
     left: 0;
     width: 100%;
     height: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--color-text-primary);
     border-radius: 50%;
     transform: translate(-50%, -50%);
 }
