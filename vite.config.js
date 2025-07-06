@@ -5,12 +5,13 @@ export default defineConfig({
     root: 'src',
     publicDir: '../public',
     server: {
-        port: 3000,
-        open: true
+        port: 5173,
+        open: false, // Change this to false to prevent opening the browser automatically
     },
     build: {
         outDir: '../dist',
         assetsDir: 'assets',
-        emptyOutDir: true
+        emptyOutDir: true,
+        sourcemap: true
     }
 });

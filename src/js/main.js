@@ -21,17 +21,36 @@ let particles;
 const loader = new THREE.TextureLoader();
 let projectHovered = false;
 
+let CONFIG;
+
 // Initialize page when loaded
 window.addEventListener('load', init);
+
 function init() {
+    // Set up global configuration
+    // This can be used to store colors, settings, etc.
+    CONFIG = {
+        colors: loadCSSColors(),
+        isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
+        animations: {
+            enabled: true, // Toggle animations globally
+            defaults: {
+                duration: 0.3,
+                ease: 'power2.inOut'
+            }
+        }
+    };
+
     // Initialize theme listener for dark mode support
     initThemeListener();
+
+    initLoader();
 
     // Initialize smooth scrolling first
     // initSmoothScroll();
 
     // Initialize animations (sets initial states)
-    initAnimations();
+    // initAnimations();
 
     // Initialize custom cursor
     initCursor();
@@ -52,118 +71,299 @@ function init() {
     startLoadingSequence();
 }
 
-function initThemeListener() {
-    // Listen for changes in the user's color scheme preference
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+function loadCSSColors() {
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
 
-    // Define color transitions based on theme
-    const colors = {
+    return {
         light: {
-            bgPrimary: '#ffffff',
-            bgSecondary: '#e8e8e8',
-            textPrimary: '#333333',
-            textSecondary: '#aaaaaa',
-            border: '#333333',
-            sphereColor: 0x4f46e5
+            bgPrimary: computedStyle.getPropertyValue('--color-bg-primary').trim(),
+            bgSecondary: computedStyle.getPropertyValue('--color-bg-secondary').trim(),
+            textPrimary: computedStyle.getPropertyValue('--color-text-primary').trim(),
+            textSecondary: computedStyle.getPropertyValue('--color-text-secondary').trim(),
+            border: computedStyle.getPropertyValue('--color-border').trim(),
+            accent: computedStyle.getPropertyValue('--color-accent').trim(),
+            accentHover: computedStyle.getPropertyValue('--color-accent-hover').trim(),
+            // Convert hex to number for Three.js
+            sphereColor: parseInt(computedStyle.getPropertyValue('--color-accent').trim().replace('#', ''), 16)
         },
         dark: {
-            bgPrimary: '#121212',
-            bgSecondary: '#1e1e1e', 
-            textPrimary: '#e0e0e0',
-            textSecondary: '#a0a0a0',
-            border: '#444444',
-            sphereColor: 0x00e18f
+            bgPrimary: computedStyle.getPropertyValue('--color-bg-primary-dark').trim(),
+            bgSecondary: computedStyle.getPropertyValue('--color-bg-secondary-dark').trim(),
+            textPrimary: computedStyle.getPropertyValue('--color-text-primary-dark').trim(),
+            textSecondary: computedStyle.getPropertyValue('--color-text-secondary-dark').trim(),
+            border: computedStyle.getPropertyValue('--color-border-dark').trim(),
+            accent: computedStyle.getPropertyValue('--color-accent').trim(),
+            accentHover: computedStyle.getPropertyValue('--color-accent-hover').trim(),
+            // Convert hex to number for Three.js
+            sphereColor: parseInt(computedStyle.getPropertyValue('--color-accent').trim().replace('#', ''), 16)
+        },
+        // Load project-specific colors
+        projects: {
+            'charles-schwab': {
+                light: computedStyle.getPropertyValue('--schwab-bg').trim(),
+                dark: computedStyle.getPropertyValue('--schwab-bg').trim() // You can add dark variants to CSS
+            },
+            'cove': {
+                light: computedStyle.getPropertyValue('--cove-bg').trim(),
+                dark: computedStyle.getPropertyValue('--cove-bg').trim()
+            },
+            'schwapp': {
+                light: computedStyle.getPropertyValue('--schwapp-bg').trim(),
+                dark: computedStyle.getPropertyValue('--schwapp-bg').trim()
+            }
         }
     };
+}
 
-    // Set initial colors based on current preference
-    const isDarkMode = mediaQuery.matches;
-    const initialColors = isDarkMode ? colors.dark : colors.light;
+function initThemeListener() {
+    // Listen for changes in the user's color scheme preference
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        CONFIG.isDarkMode = e.matches;
 
-    // Set initial body background explicitly (this gives GSAP a starting point)
-    gsap.set('body', { backgroundColor: initialColors.bgPrimary });
+        // Reload colors from CSS after theme change
+        CONFIG.colors = loadCSSColors();
 
-    // Set initial Three.js colors if sphere exists
-    if (skillsSphere) {
-        skillsSphere.material.color.setHex(initialColors.sphereColor);
-        skillsSphere.material.emissive.setHex(initialColors.sphereColor);
-    }
+        const targetColors = CONFIG.isDarkMode ? CONFIG.colors.dark : CONFIG.colors.light;
 
-    mediaQuery.addEventListener('change', (e) => {
-        const isDarkMode = e.matches;
-        const targetColors = isDarkMode ? colors.dark : colors.light;
+        gsap.to('body', {
+            backgroundColor: targetColors.bgPrimary,
+        });
 
-        // Only transition if no project is currently hovered
-        if (!projectHovered) {
-            // Smooth transition for body background
-            gsap.to('body', {
-                backgroundColor: targetColors.bgPrimary,
-                duration: 0.6,
-                ease: 'power2.inOut'
-            });
-        }
-
-        // Update Three.js sphere colors smoothly
-        if (skillsSphere) {
-            // Get current color as RGB values
-            const currentColor = skillsSphere.material.color;
-            const currentEmissive = skillsSphere.material.emissive;
-            
-            // Create temporary objects to animate
-            const colorObj = { r: currentColor.r, g: currentColor.g, b: currentColor.b };
-            const emissiveObj = { r: currentEmissive.r, g: currentEmissive.g, b: currentEmissive.b };
-            
-            // Get target color as THREE.Color object
-            const targetColorObj = new THREE.Color(targetColors.sphereColor);
-            
-            // Animate the color transition
-            gsap.to(colorObj, {
-                r: targetColorObj.r,
-                g: targetColorObj.g,
-                b: targetColorObj.b,
-                duration: 0.8,
-                ease: 'power2.inOut',
-                onUpdate: () => {
-                    skillsSphere.material.color.setRGB(colorObj.r, colorObj.g, colorObj.b);
-                }
-            });
-
-            gsap.to(emissiveObj, {
-                r: targetColorObj.r,
-                g: targetColorObj.g, 
-                b: targetColorObj.b,
-                duration: 0.8,
-                ease: 'power2.inOut',
-                onUpdate: () => {
-                    skillsSphere.material.emissive.setRGB(emissiveObj.r, emissiveObj.g, emissiveObj.b);
-                }
-            });
-        }
-
-        // Update navigation background if it's currently visible (on scroll)
-        // const nav = document.querySelector('.nav');
-        // if (window.scrollY > 100) {
-        //     const navBg = isDarkMode ? 'rgba(18, 18, 18, 0.9)' : 'rgba(255, 255, 255, 0.9)';
-        //     gsap.to(nav, {
-        //         backgroundColor: navBg,
-        //         duration: 0.6,
-        //         ease: 'power2.inOut'
-        //     });
-        // }
-
-        // Update any elements with transition classes
-        // const elementsToTransition = document.querySelectorAll('.loader, .cursor-dot');
-        // elementsToTransition.forEach(element => {
-        //     // Force a style recalculation to pick up new CSS custom properties
-        //     element.style.display = 'none';
-        //     element.offsetHeight; // Trigger reflow
-        //     element.style.display = '';
-        // });
-
-        // Refresh ScrollTrigger to pick up any new measurements
-        // ScrollTrigger.refresh(true);
+        gsap.to('.loader-circle', {
+            borderTopColor: targetColors.accent,
+            borderRightColor: targetColors.textSecondary,
+            borderBottomColor: targetColors.textSecondary,
+            borderLeftColor: targetColors.textSecondary
+        });
     });
 }
+
+function initLoader() {
+    const loader = document.querySelector('.loader');
+    const loaderCircle = document.querySelector('.loader-circle');
+
+    // Set initial styles based on theme
+    const targetColors = CONFIG.isDarkMode ? CONFIG.colors.dark : CONFIG.colors.light;
+
+    gsap.set(loader, {
+        backgroundColor: targetColors.bgPrimary,
+    });
+
+    gsap.to(loaderCircle, {
+        rotate: 360,
+        duration: 1.5,
+        repeat: -1,
+        ease: 'linear',
+    });
+}
+
+// Custom cursor
+function initCursor() {
+    const cursor = document.querySelector('.cursor');
+
+    document.addEventListener('mousemove', (e) => {
+        gsap.to(cursor, {
+            x: e.clientX,
+            y: e.clientY,
+            duration: 0.05
+        });
+    });
+
+    document.addEventListener('mouseenter', () => {
+        gsap.to(cursor, {
+            opacity: 1,
+            duration: CONFIG.animations.defaults.duration
+        });
+    });
+
+    document.addEventListener('mouseleave', () => {
+        gsap.to(cursor, {
+            opacity: 0,
+            duration: CONFIG.animations.defaults.duration
+        });
+    });
+
+    // Hover effect for links and buttons
+    const interactiveElements = document.querySelectorAll('a, button, .project, .social-link');
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            gsap.to(cursor, {
+                scale: 1.5,
+                duration: CONFIG.animations.defaults.duration
+            });
+            // cursor.classList.add('hovered');
+        });
+
+        el.addEventListener('mouseleave', () => {
+            gsap.to(cursor, {
+                scale: 1,
+                duration: CONFIG.animations.defaults.duration
+            });
+            // cursor.classList.remove('hovered');
+        });
+    });
+}
+
+// Mobile navigation
+function initNavigation() {
+    // Navigation background change on scroll
+    const nav = document.querySelector('.nav');
+
+    // Set initial state for nav
+    gsap.set(nav, {
+        backgroundColor: 'transparent',
+        backdropFilter: 'none',
+        padding: '2rem 0',
+        boxShadow: 'none'
+    });
+
+    window.addEventListener('scroll', () => {
+        // Only change nav color on scroll if no project is being hovered
+        // if (!projectHovered) {
+        if (window.scrollY > 100) {
+            gsap.to(nav, {
+                // backgroundColor: '#ffffffe6',
+                backdropFilter: 'blur(10px)',
+                padding: '1rem 0',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                duration: CONFIG.animations.defaults.duration,
+            });
+        } else {
+            gsap.to(nav, {
+                // backgroundColor: 'transparent',
+                backdropFilter: 'none',
+                padding: '2rem 0',
+                boxShadow: 'none',
+                duration: 0.3
+            });
+        }
+    });
+
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    menuToggle.addEventListener('click', () => {
+        const isActive = menuToggle.classList.contains('active');
+
+        menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        let menuToggleSpans = gsap.utils.toArray('.menu-toggle span');
+
+        if (!isActive) {
+            // Animate to X (hamburger -> X)
+            gsap.to(menuToggleSpans[0], {
+                rotate: 45,
+                y: 9, // Move down to center
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+            gsap.to(menuToggleSpans[1], {
+                opacity: 0,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+            gsap.to(menuToggleSpans[2], {
+                rotate: -45,
+                y: -9, // Move up to center
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+        } else {
+            // Animate back to hamburger (X -> hamburger)
+            gsap.to(menuToggleSpans[0], {
+                rotate: 0,
+                y: 0,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+            gsap.to(menuToggleSpans[1], {
+                opacity: 1,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+            gsap.to(menuToggleSpans[2], {
+                rotate: 0,
+                y: 0,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+        }
+    });
+
+    // Add hover effect for logo
+    const logo = document.querySelector('.logo a');
+
+    logo.addEventListener('mouseenter', () => {
+        gsap.to(logo, {
+            color: CONFIG.isDarkMode ? CONFIG.colors.dark.accent : CONFIG.colors.light.accent,
+            duration: CONFIG.animations.defaults.duration,
+            ease: CONFIG.animations.defaults.ease
+        });
+    });
+
+    logo.addEventListener('mouseleave', () => {
+        gsap.to(logo, {
+            color: CONFIG.isDarkMode ? CONFIG.colors.dark.textPrimary : CONFIG.colors.light.textPrimary,
+            duration: CONFIG.animations.defaults.duration,
+            ease: CONFIG.animations.defaults.ease
+        });
+    });
+
+    // Add hover effect for nav links
+    gsap.utils.toArray('.nav-link').forEach(link => {
+        // Create underline element for each nav link
+        const underline = document.createElement('div');
+        underline.style.position = 'absolute';
+        underline.style.bottom = '-5px';
+        underline.style.left = '0';
+        underline.style.width = '100%';
+        underline.style.height = '2px';
+        underline.style.backgroundColor = CONFIG.isDarkMode ? CONFIG.colors.dark.accent : CONFIG.colors.light.accent;
+        underline.style.transformOrigin = 'right';
+
+        // Set initial state
+        gsap.set(underline, { scaleX: 0 });
+
+        // Make link relative and append underline
+        link.style.position = 'relative';
+        link.appendChild(underline);
+
+        // Mouse enter - animate color and underline
+        link.addEventListener('mouseenter', () => {
+            gsap.to(link, {
+                color: CONFIG.isDarkMode ? CONFIG.colors.dark.accent : CONFIG.colors.light.accent,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+
+            gsap.to(underline, {
+                scaleX: 1,
+                transformOrigin: 'left',
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+        });
+
+        // Mouse leave - reset color and underline
+        link.addEventListener('mouseleave', () => {
+            gsap.to(link, {
+                color: CONFIG.isDarkMode ? CONFIG.colors.dark.textPrimary : CONFIG.colors.light.textPrimary,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+
+            gsap.to(underline, {
+                scaleX: 0,
+                transformOrigin: 'right',
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+        });
+    });
+}
+
+
 
 // Smooth scrolling with Lenis
 function initSmoothScroll() {
@@ -223,86 +423,6 @@ function initSmoothScroll() {
                 });
             }
         });
-    });
-}
-
-// Custom cursor
-function initCursor() {
-    const cursor = document.querySelector('.cursor');
-
-    document.addEventListener('mousemove', (e) => {
-        gsap.to(cursor, {
-            x: e.clientX,
-            y: e.clientY,
-            duration: 0.05
-        });
-    });
-
-    document.addEventListener('mouseenter', () => {
-        gsap.to(cursor, { opacity: 1, duration: 0.3 });
-    });
-
-    document.addEventListener('mouseleave', () => {
-        gsap.to(cursor, { opacity: 0, duration: 0.3 });
-    });
-
-    // Hover effect for links and buttons
-    const interactiveElements = document.querySelectorAll('a, button, .project, .social-link');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            gsap.to(cursor, { scale: 1.5, duration: 0.3 });
-            cursor.classList.add('hovered');
-        });
-
-        el.addEventListener('mouseleave', () => {
-            gsap.to(cursor, { scale: 1, duration: 0.3 });
-            cursor.classList.remove('hovered');
-        });
-    });
-}
-
-// Mobile navigation
-function initNavigation() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-
-    menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('active');
-        navLinks.classList.toggle('active');
-    });
-
-    // Navigation background change on scroll
-    const nav = document.querySelector('.nav');
-
-    // Set initial state for nav
-    gsap.set(nav, {
-        backgroundColor: 'transparent',
-        backdropFilter: 'none',
-        padding: '2rem 0',
-        boxShadow: 'none'
-    });
-
-    window.addEventListener('scroll', () => {
-        // Only change nav color on scroll if no project is being hovered
-        // if (!projectHovered) {
-            if (window.scrollY > 100) {
-                gsap.to(nav, {
-                    // backgroundColor: '#ffffffe6',
-                    backdropFilter: 'blur(10px)',
-                    padding: '1rem 0',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                    duration: 0.3
-                });
-            } else {
-                gsap.to(nav, {
-                    // backgroundColor: 'transparent',
-                    backdropFilter: 'none',
-                    padding: '2rem 0',
-                    boxShadow: 'none',
-                    duration: 0.3
-                });
-            }
-        // }
     });
 }
 
@@ -368,7 +488,7 @@ function initAnimations() {
 
     // Projects animation setup
     gsap.utils.toArray('.project-titles-list a').forEach(project => {
-        gsap.set(project, { 
+        gsap.set(project, {
             y: 50,
             opacity: 0,
             pointerEvents: 'none' // Disable pointer events initially 
@@ -581,9 +701,11 @@ function initHeroScene() {
     function drawGrid() {
         ctx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
 
-        // Check if dark mode is preferred
-        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const cellColor = isDark ? '#ffffff10' : '#00000010'; // Lighter transparent white (0x10 = ~6% opacity)
+        // // Check if dark mode is preferred
+        // const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+
+        const cellColor = CONFIG.isDarkMode ? '#ffffff10' : '#00000010'; // Lighter transparent white (0x10 = ~6% opacity)
 
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
@@ -648,7 +770,7 @@ function initProjectHovers() {
 
     // Define project colors
     const projectColors = {
-        'charles-schwab': { 
+        'charles-schwab': {
             light: '#c7edff',
             dark: '#1a3a4a'
         },
@@ -807,7 +929,7 @@ function initProjectHovers() {
             const defaultBg = isDark ? '#121212' : '#ffffff';
 
             // If the mouse is leaving the project link and not going to another project link
-            if ( event.target.classList.contains('project-title') !== event.relatedTarget.classList.contains('project-title') ) {
+            if (event.target.classList.contains('project-title') !== event.relatedTarget.classList.contains('project-title')) {
                 // Reset state
                 gsap.set('body', { backgroundColor: defaultBg });
                 // gsap.set(nav, { backgroundColor: '#ffffff' });
