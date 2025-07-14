@@ -21,25 +21,27 @@ let particles;
 const loader = new THREE.TextureLoader();
 let projectHovered = false;
 
-let CONFIG;
+// Load initial theme colors immediately when script loads
+let CONFIG = {
+    colors: loadCSSColors(),
+    isDarkMode: document.documentElement.classList.contains('dark-theme'),
+    animations: {
+        enabled: true,
+        defaults: {
+            duration: 0.3,
+            ease: 'power2.inOut'
+        }
+    }
+};
+
+// Reveal the page now that JS has loaded
+document.documentElement.style.opacity = '1';
+
 
 // Initialize page when loaded
 window.addEventListener('load', init);
 
 function init() {
-    // Set up global configuration
-    // This can be used to store colors, settings, etc.
-    CONFIG = {
-        colors: loadCSSColors(),
-        isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
-        animations: {
-            enabled: true, // Toggle animations globally
-            defaults: {
-                duration: 0.3,
-                ease: 'power2.inOut'
-            }
-        }
-    };
 
     // Initialize theme listener for dark mode support
     initThemeListener();
@@ -102,15 +104,23 @@ function loadCSSColors() {
         projects: {
             'charles-schwab': {
                 light: computedStyle.getPropertyValue('--schwab-bg').trim(),
-                dark: computedStyle.getPropertyValue('--schwab-bg').trim() // You can add dark variants to CSS
+                dark: computedStyle.getPropertyValue('--schwab-bg-dark').trim() // You can add dark variants to CSS
             },
             'cove': {
                 light: computedStyle.getPropertyValue('--cove-bg').trim(),
-                dark: computedStyle.getPropertyValue('--cove-bg').trim()
+                dark: computedStyle.getPropertyValue('--cove-bg-dark').trim()
             },
             'schwapp': {
                 light: computedStyle.getPropertyValue('--schwapp-bg').trim(),
-                dark: computedStyle.getPropertyValue('--schwapp-bg').trim()
+                dark: computedStyle.getPropertyValue('--schwapp-bg-dark').trim()
+            },
+            'safelinc': {
+                light: computedStyle.getPropertyValue('--safelinc-bg').trim(),
+                dark: computedStyle.getPropertyValue('--safelinc-bg-dark').trim()
+            },
+            'letics': {
+                light: computedStyle.getPropertyValue('--letics-bg').trim(),
+                dark: computedStyle.getPropertyValue('--letics-bg-dark').trim()
             }
         }
     };
@@ -121,21 +131,20 @@ function initThemeListener() {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         CONFIG.isDarkMode = e.matches;
 
+        // Update theme class
+        if (e.matches) {
+            document.documentElement.classList.remove('light-theme');
+            document.documentElement.classList.add('dark-theme');
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+            document.documentElement.classList.add('light-theme');
+        }
+
         // Reload colors from CSS after theme change
         CONFIG.colors = loadCSSColors();
 
-        const targetColors = CONFIG.isDarkMode ? CONFIG.colors.dark : CONFIG.colors.light;
-
-        gsap.to('body', {
-            backgroundColor: targetColors.bgPrimary,
-        });
-
-        gsap.to('.loader-circle', {
-            borderTopColor: targetColors.accent,
-            borderRightColor: targetColors.textSecondary,
-            borderBottomColor: targetColors.textSecondary,
-            borderLeftColor: targetColors.textSecondary
-        });
+        // The CSS custom properties will update automatically via the class change
+        // No need for GSAP transitions here as CSS handles it smoothly
     });
 }
 
@@ -143,13 +152,8 @@ function initLoader() {
     const loader = document.querySelector('.loader');
     const loaderCircle = document.querySelector('.loader-circle');
 
-    // Set initial styles based on theme
-    const targetColors = CONFIG.isDarkMode ? CONFIG.colors.dark : CONFIG.colors.light;
-
-    gsap.set(loader, {
-        backgroundColor: targetColors.bgPrimary,
-    });
-
+    // The loader background is now handled by CSS custom properties
+    // Just animate the circle rotation
     gsap.to(loaderCircle, {
         rotate: 360,
         duration: 1.5,
@@ -304,7 +308,7 @@ function initNavigation() {
 
     logo.addEventListener('mouseleave', () => {
         gsap.to(logo, {
-            color: CONFIG.isDarkMode ? CONFIG.colors.dark.textPrimary : CONFIG.colors.light.textPrimary,
+            clearProps: 'color',
             duration: CONFIG.animations.defaults.duration,
             ease: CONFIG.animations.defaults.ease
         });
@@ -348,7 +352,7 @@ function initNavigation() {
         // Mouse leave - reset color and underline
         link.addEventListener('mouseleave', () => {
             gsap.to(link, {
-                color: CONFIG.isDarkMode ? CONFIG.colors.dark.textPrimary : CONFIG.colors.light.textPrimary,
+                clearProps: 'color',
                 duration: CONFIG.animations.defaults.duration,
                 ease: CONFIG.animations.defaults.ease
             });
@@ -768,34 +772,6 @@ function initProjectHovers() {
     const nav = document.querySelector('.nav');
     const heroCanvas = document.getElementById('hero-canvas');
 
-    // Define project colors
-    const projectColors = {
-        'charles-schwab': {
-            light: '#c7edff',
-            dark: '#1a3a4a'
-        },
-        'cove': {
-            light: '#ffe6cb',
-            dark: '#4a3a1a'
-        },
-        'schwapp': {
-            light: '#c7edff',
-            dark: '#1a3a4a'
-        },
-        'safelinc': {
-            light: '#3FB550',
-            dark: '#2a4a32'
-        },
-        'letics': {
-            light: '#FF4B4B',
-            dark: '#4a2a2a'
-        }
-    };
-
-    function prefersDarkMode() {
-        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-
     // Track current state
     let activeProjectId = null;
     let isBlockVisible = false;
@@ -832,10 +808,17 @@ function initProjectHovers() {
             // Update state
             activeProjectId = projectId;
 
-            // Get the appropriate color based on system preference
-            const isDark = prefersDarkMode();
-            const colorScheme = isDark ? 'dark' : 'light';
-            const backgroundColor = projectColors[projectId][colorScheme];
+            // Get the appropriate color based on CONFIG dark mode state
+            const colorScheme = CONFIG.isDarkMode ? 'dark' : 'light';
+
+            // Get color from CONFIG projects
+            let backgroundColor;
+            if (CONFIG.colors.projects[projectId]) {
+                backgroundColor = CONFIG.colors.projects[projectId][colorScheme];
+            } else {
+                // Fallback to theme colors if project not found
+                backgroundColor = CONFIG.isDarkMode ? CONFIG.colors.dark.bgSecondary : CONFIG.colors.light.bgSecondary;
+            }
 
             // Hide all visuals
             document.querySelectorAll('.project-visual').forEach(visual => {
@@ -896,7 +879,7 @@ function initProjectHovers() {
                 underline.style.left = '0';
                 underline.style.width = '100%';
                 underline.style.height = '4px';
-                underline.style.backgroundColor = '#333333';
+                underline.style.backgroundColor = CONFIG.isDarkMode ? CONFIG.colors.dark.textPrimary : CONFIG.colors.light.textPrimary;
                 underline.style.transformOrigin = 'right';
                 underline.style.transform = 'scaleX(0)';
                 link.style.position = 'relative';
@@ -924,15 +907,10 @@ function initProjectHovers() {
             gsap.killTweensOf(visualBlock);
             gsap.killTweensOf(heroCanvas);
 
-            // Reset to system default background
-            const isDark = prefersDarkMode();
-            const defaultBg = isDark ? '#121212' : '#ffffff';
-
             // If the mouse is leaving the project link and not going to another project link
             if (event.target.classList.contains('project-title') !== event.relatedTarget.classList.contains('project-title')) {
                 // Reset state
-                gsap.set('body', { backgroundColor: defaultBg });
-                // gsap.set(nav, { backgroundColor: '#ffffff' });
+                gsap.set('body', { clearProps: 'backgroundColor' });
                 gsap.set(visualBlock, { opacity: 0 });
                 gsap.set(heroCanvas, { opacity: 1 });
             }
@@ -944,6 +922,10 @@ function initProjectHovers() {
                     duration: 0.3,
                     transformOrigin: 'right',
                     ease: 'power2.inOut',
+                    onComplete: () => {
+                        // Remove the underline element after animation
+                        link.querySelector('.link-underline').remove();
+                    }
                 });
             }
         });

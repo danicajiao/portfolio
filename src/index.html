@@ -5,6 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>danielcajiao | Software Engineer</title>
+    <script>
+        // FOUC Prevention - Run immediately before any CSS loads
+        (function () {
+            // Detect theme preference immediately
+            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            // Apply theme class to html element before CSS loads
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark-theme');
+            } else {
+                document.documentElement.classList.add('light-theme');
+            }
+
+            // Set initial opacity to prevent flash
+            document.documentElement.style.opacity = '0';
+        })();
+    </script>
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,7 +74,7 @@
         </div>
         <div class="hero-content">
             <h1 class="hero-title">
-                <span class="hero-title-line">Hello, I'm <span class="hero-title-highlight">Daniel.</span></span>
+                <!-- <span class="hero-title-line">Hello, I'm <span class="hero-title-highlight">Daniel.</span></span> -->
                 <span class="hero-title-line">Software Engineer &</span>
                 <span class="hero-title-line">Creative Developer</span>
             </h1>

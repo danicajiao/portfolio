@@ -1,6 +1,6 @@
 /* main.css */
 :root {
-    /* Light mode colors */
+    /* Light mode colors - default */
     --color-bg-primary: #ffffff;
     --color-bg-secondary: #e8e8e8;
     --color-text-primary: #333333;
@@ -9,6 +9,12 @@
     --color-accent-hover: #3aca95;
     --color-border: #333333;
 
+    --schwab-bg: #c7edff;
+    --cove-bg: #ffe9c7;
+    --schwapp-bg: #c7edff;
+    --safelinc-bg: #3fb550;
+    --letics-bg: #ff4b4b;
+
     /* Dark mode colors */
     --color-bg-primary-dark: #121212;
     --color-bg-secondary-dark: #1e1e1e;
@@ -16,9 +22,11 @@
     --color-text-secondary-dark: #a0a0a0;
     --color-border-dark: #444444;
 
-    --schwab-bg: #c7edff;
-    --cove-bg: #ffe9c7;
-    --schwapp-bg: #c7edff;
+    --schwab-bg-dark: #1a3a4a;
+    --cove-bg-dark: #4a3a1a;
+    --schwapp-bg-dark: #1a3a4a;
+    --safelinc-bg-dark: #2a4a32;
+    --letics-bg-dark: #4a2a2a;
 
     /* Typography */
     --font-primary: 'Space Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -41,15 +49,39 @@
     --container-max-width: 1200px;
 }
 
-/* Dark theme colors */
-/* @media (prefers-color-scheme: dark) {
-    :root {
-        --color-bg-primary: #121212;
-        --color-bg-secondary: #1e1e1e;
-        --color-text-primary: #e0e0e0;
-        --color-text-secondary: #a0a0a0;
-        --color-border: #444444;
-    }
+/* Light theme explicit (for consistency) */
+.light-theme {
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #e8e8e8;
+    --color-text-primary: #333333;
+    --color-text-secondary: #aaaaaa;
+    --color-border: #333333;
+
+    --schwab-bg: #c7edff;
+    --cove-bg: #ffe9c7;
+    --schwapp-bg: #c7edff;
+    --safelinc-bg: #3fb550;
+    --letics-bg: #ff4b4b;
+}
+
+/* Dark theme overrides */
+.dark-theme {
+    --color-bg-primary: #121212;
+    --color-bg-secondary: #1e1e1e;
+    --color-text-primary: #e0e0e0;
+    --color-text-secondary: #a0a0a0;
+    --color-border: #444444;
+
+    --schwab-bg: #1a3a4a;
+    --cove-bg: #4a3a1a;
+    --schwapp-bg: #1a3a4a;
+    --safelinc-bg: #2a4a32;
+    --letics-bg: #4a2a2a;
+}
+
+/* Smooth transitions for theme changes */
+/* * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 } */
 
 /* Reset & Base Styles */
