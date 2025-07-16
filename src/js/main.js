@@ -37,7 +37,6 @@ let CONFIG = {
 // Reveal the page now that JS has loaded
 document.documentElement.style.opacity = '1';
 
-
 // Initialize page when loaded
 window.addEventListener('load', init);
 
@@ -57,13 +56,16 @@ function init() {
     // Initialize custom cursor
     initCursor();
 
+    initNavigation();
+
     // Initialize 3D scenes
     initHeroScene();
-    initSkillsScene();    // Initialize project hover effects with GSAP
+
     initProjectHovers();
 
+    initSkillsScene();    // Initialize project hover effects with GSAP
+
     // Initialize interactive elements
-    initNavigation();
     initForm();
 
     // Force ScrollTrigger to recalculate all scrollbar-related measurements
@@ -78,55 +80,48 @@ function loadCSSColors() {
     const computedStyle = getComputedStyle(root);
 
     return {
-        light: {
-            bgPrimary: computedStyle.getPropertyValue('--color-bg-primary').trim(),
-            bgSecondary: computedStyle.getPropertyValue('--color-bg-secondary').trim(),
-            textPrimary: computedStyle.getPropertyValue('--color-text-primary').trim(),
-            textSecondary: computedStyle.getPropertyValue('--color-text-secondary').trim(),
-            border: computedStyle.getPropertyValue('--color-border').trim(),
-            accent: computedStyle.getPropertyValue('--color-accent').trim(),
-            accentHover: computedStyle.getPropertyValue('--color-accent-hover').trim(),
-            // Convert hex to number for Three.js
-            sphereColor: parseInt(computedStyle.getPropertyValue('--color-accent').trim().replace('#', ''), 16)
-        },
-        dark: {
-            bgPrimary: computedStyle.getPropertyValue('--color-bg-primary-dark').trim(),
-            bgSecondary: computedStyle.getPropertyValue('--color-bg-secondary-dark').trim(),
-            textPrimary: computedStyle.getPropertyValue('--color-text-primary-dark').trim(),
-            textSecondary: computedStyle.getPropertyValue('--color-text-secondary-dark').trim(),
-            border: computedStyle.getPropertyValue('--color-border-dark').trim(),
-            accent: computedStyle.getPropertyValue('--color-accent').trim(),
-            accentHover: computedStyle.getPropertyValue('--color-accent-hover').trim(),
-            // Convert hex to number for Three.js
-            sphereColor: parseInt(computedStyle.getPropertyValue('--color-accent').trim().replace('#', ''), 16)
-        },
+        bgPrimary: computedStyle.getPropertyValue('--color-bg-primary').trim(),
+        bgSecondary: computedStyle.getPropertyValue('--color-bg-secondary').trim(),
+        textPrimary: computedStyle.getPropertyValue('--color-text-primary').trim(),
+        textSecondary: computedStyle.getPropertyValue('--color-text-secondary').trim(),
+        border: computedStyle.getPropertyValue('--color-border').trim(),
+        accent: computedStyle.getPropertyValue('--color-accent').trim(),
+        accentHover: computedStyle.getPropertyValue('--color-accent-hover').trim(),
+        // Convert hex to number for Three.js
+        sphereColor: parseInt(computedStyle.getPropertyValue('--color-accent').trim().replace('#', ''), 16),
         // Load project-specific colors
-        projects: {
-            'charles-schwab': {
-                light: computedStyle.getPropertyValue('--schwab-bg').trim(),
-                dark: computedStyle.getPropertyValue('--schwab-bg-dark').trim() // You can add dark variants to CSS
-            },
-            'cove': {
-                light: computedStyle.getPropertyValue('--cove-bg').trim(),
-                dark: computedStyle.getPropertyValue('--cove-bg-dark').trim()
-            },
-            'schwapp': {
-                light: computedStyle.getPropertyValue('--schwapp-bg').trim(),
-                dark: computedStyle.getPropertyValue('--schwapp-bg-dark').trim()
-            },
-            'safelinc': {
-                light: computedStyle.getPropertyValue('--safelinc-bg').trim(),
-                dark: computedStyle.getPropertyValue('--safelinc-bg-dark').trim()
-            },
-            'letics': {
-                light: computedStyle.getPropertyValue('--letics-bg').trim(),
-                dark: computedStyle.getPropertyValue('--letics-bg-dark').trim()
-            }
-        }
+        schwabBg: computedStyle.getPropertyValue('--schwab-bg').trim(),
+        coveBg: computedStyle.getPropertyValue('--cove-bg').trim(),
+        schwappBg: computedStyle.getPropertyValue('--schwapp-bg').trim(),
+        safelincBg: computedStyle.getPropertyValue('--safelinc-bg').trim(),
+        leticsBg: computedStyle.getPropertyValue('--letics-bg').trim(),
     };
 }
 
 function initThemeListener() {
+    const body = document.body;
+    const logo = document.querySelector('.logo a');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const projectLinks = document.querySelectorAll('.project-link');
+
+    // Set initial values based on computed CSS variables for GSAP to transition from
+    gsap.set(body, {
+        backgroundColor: CONFIG.colors.bgPrimary,
+        color: CONFIG.colors.textPrimary
+    });
+
+    gsap.set(logo, {
+        color: CONFIG.colors.textPrimary
+    });
+
+    navLinks.forEach(link => {
+        gsap.to(link, {
+            color: CONFIG.colors.textPrimary,
+            duration: CONFIG.animations.defaults.duration,
+            ease: CONFIG.animations.defaults.ease
+        });
+    });
+
     // Listen for changes in the user's color scheme preference
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         CONFIG.isDarkMode = e.matches;
@@ -135,16 +130,92 @@ function initThemeListener() {
         if (e.matches) {
             document.documentElement.classList.remove('light-theme');
             document.documentElement.classList.add('dark-theme');
+
+            // Reload colors from CSS after theme change
+            CONFIG.colors = loadCSSColors();
+
+            gsap.to(body, {
+                backgroundColor: CONFIG.colors.bgPrimary,
+                color: CONFIG.colors.textPrimary,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+
+            gsap.to(logo, {
+                color: CONFIG.colors.textPrimary,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+
+            navLinks.forEach(link => {
+                gsap.to(link, {
+                    color: CONFIG.colors.textPrimary,
+                    duration: CONFIG.animations.defaults.duration,
+                    ease: CONFIG.animations.defaults.ease
+                });
+            });
+
+            projectLinks.forEach(link => {
+                gsap.to(link, {
+                    color: CONFIG.colors.textPrimary,
+                    duration: CONFIG.animations.defaults.duration,
+                    ease: CONFIG.animations.defaults.ease
+                });
+
+                const underline = link.querySelector('div');
+                if (underline) {
+                    gsap.to(underline, {
+                        backgroundColor: CONFIG.colors.textPrimary,
+                        duration: CONFIG.animations.defaults.duration,
+                        ease: CONFIG.animations.defaults.ease
+                    });
+                }
+            });
         } else {
             document.documentElement.classList.remove('dark-theme');
             document.documentElement.classList.add('light-theme');
+
+            // Reload colors from CSS after theme change
+            CONFIG.colors = loadCSSColors();
+
+            gsap.to(body, {
+                backgroundColor: CONFIG.colors.bgPrimary,
+                color: CONFIG.colors.textPrimary,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+
+            gsap.to(logo, {
+                color: CONFIG.colors.textPrimary,
+                duration: CONFIG.animations.defaults.duration,
+                ease: CONFIG.animations.defaults.ease
+            });
+
+            navLinks.forEach(link => {
+                gsap.to(link, {
+                    color: CONFIG.colors.textPrimary,
+                    duration: CONFIG.animations.defaults.duration,
+                    ease: CONFIG.animations.defaults.ease
+                });
+            });
+
+            projectLinks.forEach(link => {
+                gsap.to(link, {
+                    color: CONFIG.colors.textPrimary,
+                    duration: CONFIG.animations.defaults.duration,
+                    ease: CONFIG.animations.defaults.ease
+                });
+
+                const underline = link.querySelector('div');
+                if (underline) {
+                    gsap.to(underline, {
+                        backgroundColor: CONFIG.colors.textPrimary,
+                        duration: CONFIG.animations.defaults.duration,
+                        ease: CONFIG.animations.defaults.ease
+                    });
+                }
+            });
         }
-
-        // Reload colors from CSS after theme change
-        CONFIG.colors = loadCSSColors();
-
-        // The CSS custom properties will update automatically via the class change
-        // No need for GSAP transitions here as CSS handles it smoothly
     });
 }
 
@@ -300,7 +371,7 @@ function initNavigation() {
 
     logo.addEventListener('mouseenter', () => {
         gsap.to(logo, {
-            color: CONFIG.isDarkMode ? CONFIG.colors.dark.accent : CONFIG.colors.light.accent,
+            color: CONFIG.colors.accent,
             duration: CONFIG.animations.defaults.duration,
             ease: CONFIG.animations.defaults.ease
         });
@@ -308,7 +379,7 @@ function initNavigation() {
 
     logo.addEventListener('mouseleave', () => {
         gsap.to(logo, {
-            clearProps: 'color',
+            color: CONFIG.colors.textPrimary,
             duration: CONFIG.animations.defaults.duration,
             ease: CONFIG.animations.defaults.ease
         });
@@ -323,7 +394,7 @@ function initNavigation() {
         underline.style.left = '0';
         underline.style.width = '100%';
         underline.style.height = '2px';
-        underline.style.backgroundColor = CONFIG.isDarkMode ? CONFIG.colors.dark.accent : CONFIG.colors.light.accent;
+        underline.style.backgroundColor = CONFIG.colors.accent;
         underline.style.transformOrigin = 'right';
 
         // Set initial state
@@ -336,7 +407,7 @@ function initNavigation() {
         // Mouse enter - animate color and underline
         link.addEventListener('mouseenter', () => {
             gsap.to(link, {
-                color: CONFIG.isDarkMode ? CONFIG.colors.dark.accent : CONFIG.colors.light.accent,
+                color: CONFIG.colors.accent,
                 duration: CONFIG.animations.defaults.duration,
                 ease: CONFIG.animations.defaults.ease
             });
@@ -352,7 +423,7 @@ function initNavigation() {
         // Mouse leave - reset color and underline
         link.addEventListener('mouseleave', () => {
             gsap.to(link, {
-                clearProps: 'color',
+                color: CONFIG.colors.textPrimary,
                 duration: CONFIG.animations.defaults.duration,
                 ease: CONFIG.animations.defaults.ease
             });
@@ -367,67 +438,331 @@ function initNavigation() {
     });
 }
 
+// Hero background scene with Conway's Game of Life
+function initHeroScene() {
+    const heroCanvas = document.getElementById('hero-canvas');
+    if (!heroCanvas) return;
+
+    // Set canvas size
+    heroCanvas.width = window.innerWidth;
+    heroCanvas.height = window.innerHeight;
+    const ctx = heroCanvas.getContext('2d');
+
+    // Game of Life settings
+    const cellSize = 10;
+    const cols = Math.floor(heroCanvas.width / cellSize);
+    const rows = Math.floor(heroCanvas.height / cellSize);
+    let grid = createRandomGrid(cols, rows);
+
+    function createRandomGrid(cols, rows) {
+        const arr = [];
+        for (let y = 0; y < rows; y++) {
+            arr[y] = [];
+            for (let x = 0; x < cols; x++) {
+                // Place most live cells near the edges, few in the center
+                const edgeThreshold = 5; // Number of cells from edge considered 'edge'
+                const isEdge = x < edgeThreshold || x >= cols - edgeThreshold || y < edgeThreshold || y >= rows - edgeThreshold;
+                if (isEdge) {
+                    arr[y][x] = Math.random() > 0.5 ? 1 : 0; // 50% chance alive on edge
+                } else {
+                    arr[y][x] = 0; // 0% chance alive in center
+                }
+            }
+        }
+        return arr;
+    }
+
+    function drawGrid() {
+        ctx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+
+        // // Check if dark mode is preferred
+        // const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 
-// Smooth scrolling with Lenis
-function initSmoothScroll() {
-    const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        direction: 'vertical',
-        gestureDirection: 'vertical',
-        smooth: true,
-        smoothTouch: false,
-        touchMultiplier: 2,
+        const cellColor = CONFIG.isDarkMode ? '#ffffff10' : '#00000010'; // Lighter transparent white (0x10 = ~6% opacity)
+
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                if (grid[y][x]) {
+                    ctx.fillStyle = cellColor; // Even lighter transparent black (0x10 = ~6% opacity)
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+    }
+
+    function nextGeneration() {
+        const newGrid = [];
+        for (let y = 0; y < rows; y++) {
+            newGrid[y] = [];
+            for (let x = 0; x < cols; x++) {
+                let neighbors = 0;
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        if (i === 0 && j === 0) continue;
+                        const nx = x + j;
+                        const ny = y + i;
+                        if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                            neighbors += grid[ny][nx];
+                        }
+                    }
+                }
+                if (grid[y][x] === 1) {
+                    newGrid[y][x] = neighbors === 2 || neighbors === 3 ? 1 : 0;
+                } else {
+                    newGrid[y][x] = neighbors === 3 ? 1 : 0;
+                }
+            }
+        }
+        grid = newGrid;
+    }
+
+    function animate() {
+        drawGrid();
+        setTimeout(() => {
+            nextGeneration();
+            requestAnimationFrame(animate);
+        }, 100); // 100ms per generation (adjust as desired)
+    }
+
+    animate();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        heroCanvas.width = window.innerWidth;
+        heroCanvas.height = window.innerHeight;
+    });
+}
+
+// Add this to your init function or create a new function called from init
+function initProjectHovers() {
+    const projectLinks = document.querySelectorAll('.project-link');
+    const visualBlock = document.querySelector('.project-visual-block');
+    const nav = document.querySelector('.nav');
+    const heroCanvas = document.getElementById('hero-canvas');
+
+    // Track current state
+    let activeProjectId = null;
+    let isBlockVisible = false;
+
+    // Set initial state
+    gsap.set(visualBlock, {
+        transformOrigin: 'right center',
+        translateX: '20%',
+        opacity: 0
     });
 
-    // Connect Lenis to ScrollTrigger
-    ScrollTrigger.scrollerProxy(document.body, {
-        scrollTop(value) {
-            if (arguments.length) {
-                lenis.scrollTo(value);
+    // Hide all visuals initially
+    document.querySelectorAll('.project-visual').forEach(visual => {
+        gsap.set(visual, { opacity: 0 });
+    });
+
+    projectLinks.forEach(link => {
+        // Extract project name from ID
+        const projectId = link.id.replace('-link', '');
+
+        // Create underline element for each nav link
+        const underline = document.createElement('div');
+        underline.style.position = 'absolute';
+        underline.style.bottom = '-5px';
+        underline.style.left = '0';
+        underline.style.width = '100%';
+        underline.style.height = '4px';
+        underline.style.backgroundColor = CONFIG.colors.textPrimary;
+        underline.style.transformOrigin = 'right';
+
+        // Set initial state
+        gsap.set(underline, { scaleX: 0 });
+
+        // Make link relative and append underline
+        link.style.position = 'relative';
+        link.appendChild(underline);
+
+        // Mouse enter animation
+        link.addEventListener('mouseenter', (event) => {
+            // If a project is already hovered, don't do anything
+            if (!projectHovered) projectHovered = true;
+
+            // Kill any ongoing animations
+            gsap.killTweensOf('body', "backgroundColor");
+            gsap.killTweensOf(visualBlock);
+            document.querySelectorAll('.project-visual').forEach(visual => {
+                gsap.killTweensOf(visual);
+            });
+            gsap.killTweensOf(link, "backgroundColor");
+
+            // Update state
+            activeProjectId = projectId;
+
+            // Get color from CONFIG projects
+            let backgroundColor = CONFIG.colors[`${projectId}Bg`];
+
+            // Hide all visuals
+            document.querySelectorAll('.project-visual').forEach(visual => {
+                visual.style.opacity = 0;
+            });
+
+            // Show the relevant visual
+            const projectVisual = document.getElementById(`${projectId}-visual`);
+            if (projectVisual) {
+                gsap.fromTo(projectVisual,
+                    { opacity: 0 }, // Only "from" properties
+                    {
+                        opacity: 1,
+                        duration: 0.4,
+                        ease: 'power2.out'
+                    }
+                );
             }
-            return lenis.scroll;
-        },
-        getBoundingClientRect() {
-            return {
-                top: 0,
-                left: 0,
-                width: window.innerWidth,
-                height: window.innerHeight
-            };
+
+            gsap.to(heroCanvas, {
+                opacity: 0,
+                duration: 0.4,
+                ease: 'power2.inOut'
+            });
+
+            // Smoothly transition body background color
+            gsap.to('body', {
+                backgroundColor: backgroundColor,
+                duration: 0.2,
+                ease: 'power2.inOut'
+            });
+
+            // Show the visual block
+            gsap.fromTo(visualBlock,
+                {
+                    opacity: 0,
+                    translateX: '20%'
+                },
+                {
+                    opacity: 1,
+                    translateX: '0%',
+                    duration: 0.4,
+                    ease: 'power2.inOut',
+                    onStart: () => {
+                        isBlockVisible = true;
+                        activeProjectId = projectId;
+                    }
+                }
+            );
+
+            // Animate the underline
+            gsap.to(underline, {
+                transformOrigin: 'left',
+                scaleX: 1,
+                duration: 0.3,
+                ease: 'power2.inOut'
+            });
+        });
+
+        // Reset the project link on mouse leave
+        link.addEventListener('mouseleave', (event) => {
+            projectHovered = false;
+
+            console.log(event.target);
+            console.log(event.relatedTarget);
+
+            gsap.killTweensOf('body');
+            gsap.killTweensOf(nav);
+            gsap.killTweensOf(visualBlock);
+            gsap.killTweensOf(heroCanvas);
+
+            // If the mouse is leaving the project link AND NOT going to another project link
+            if (event.target.classList.contains('project-link') !== event.relatedTarget.classList.contains('project-link')) {
+                // Reset state
+                gsap.set('body', { backgroundColor: CONFIG.colors.bgPrimary });
+                gsap.set(visualBlock, { opacity: 0 });
+                gsap.set(heroCanvas, { opacity: 1 });
+            }
+
+            // Reset underline
+            gsap.to(underline, {
+                scaleX: 0,
+                duration: 0.3,
+                transformOrigin: 'right',
+                ease: 'power2.inOut'
+            });
+        });
+    });
+}
+
+// Skills scene with Three.js
+function initSkillsScene() {
+    const skillsCanvas = document.getElementById('skills-canvas');
+
+    if (!skillsCanvas) return;
+
+    // Scene, camera and renderer
+    const skillsScene = new THREE.Scene();
+    const skillsCamera = new THREE.PerspectiveCamera(75, skillsCanvas.clientWidth / skillsCanvas.clientHeight, 0.1, 1000);
+    const skillsRenderer = new THREE.WebGLRenderer({ canvas: skillsCanvas, alpha: true, antialias: true });
+    skillsRenderer.setSize(skillsCanvas.clientWidth, skillsCanvas.clientHeight);
+    skillsRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Create sphere geometry
+    const geometry = new THREE.IcosahedronGeometry(1, 1);
+    const material = new THREE.MeshPhongMaterial({
+        color: 0x4f46e5,
+        wireframe: true,
+        emissive: 0x4f46e5,
+        emissiveIntensity: 0.5,
+        transparent: true,
+        opacity: 0.8
+    });
+
+    // Create mesh
+    skillsSphere = new THREE.Mesh(geometry, material);
+    skillsScene.add(skillsSphere);
+
+    // Add lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    skillsScene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0x4f46e5, 1);
+    pointLight.position.set(2, 2, 2);
+    skillsScene.add(pointLight);
+
+    // Position camera
+    skillsCamera.position.z = 2.5;
+
+    // Scroll-based animation
+    ScrollTrigger.create({
+        trigger: '.skills',
+        start: 'top bottom',
+        end: 'bottom top',
+        onUpdate: (self) => {
+            // Rotate sphere based on scroll position
+            skillsSphere.rotation.y = self.progress * Math.PI * 2;
         }
     });
 
-    // Update ScrollTrigger on scroll
-    lenis.on('scroll', ScrollTrigger.update);
+    // Animation
+    const animateSkills = () => {
+        requestAnimationFrame(animateSkills);
 
-    // Define the animation loop that will run Lenis
-    gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-    });
+        // Continuous slight rotation
+        skillsSphere.rotation.x += 0.002;
 
-    // Remove the default RAF because we're handling it with gsap.ticker
-    // This ensures GSAP and Lenis are in sync
-    gsap.ticker.lagSmoothing(0);
+        // Render
+        skillsRenderer.render(skillsScene, skillsCamera);
+    };
 
-    // Handle navigation click for smooth scrolling
-    document.querySelectorAll('nav a, .hero-cta a, .scroll-indicator').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
+    animateSkills();
 
-            const targetId = this.getAttribute('href');
-            const target = document.querySelector(targetId);
+    // Handle resize
+    const handleResize = () => {
+        const width = skillsCanvas.clientWidth;
+        const height = skillsCanvas.clientHeight;
 
-            if (target) {
-                lenis.scrollTo(target, {
-                    offset: 0,
-                    duration: 1.2,
-                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-                });
-            }
-        });
-    });
+        // Update camera
+        skillsCamera.aspect = width / height;
+        skillsCamera.updateProjectionMatrix();
+
+        // Update renderer
+        skillsRenderer.setSize(width, height);
+    };
+
+    window.addEventListener('resize', handleResize);
 }
 
 // Contact form handling
@@ -668,348 +1003,68 @@ function startPageAnimations() {
     });
 }
 
-// Hero background scene with Conway's Game of Life
-function initHeroScene() {
-    const heroCanvas = document.getElementById('hero-canvas');
-    if (!heroCanvas) return;
 
-    // Set canvas size
-    heroCanvas.width = window.innerWidth;
-    heroCanvas.height = window.innerHeight;
-    const ctx = heroCanvas.getContext('2d');
-
-    // Game of Life settings
-    const cellSize = 10;
-    const cols = Math.floor(heroCanvas.width / cellSize);
-    const rows = Math.floor(heroCanvas.height / cellSize);
-    let grid = createRandomGrid(cols, rows);
-
-    function createRandomGrid(cols, rows) {
-        const arr = [];
-        for (let y = 0; y < rows; y++) {
-            arr[y] = [];
-            for (let x = 0; x < cols; x++) {
-                // Place most live cells near the edges, few in the center
-                const edgeThreshold = 5; // Number of cells from edge considered 'edge'
-                const isEdge = x < edgeThreshold || x >= cols - edgeThreshold || y < edgeThreshold || y >= rows - edgeThreshold;
-                if (isEdge) {
-                    arr[y][x] = Math.random() > 0.5 ? 1 : 0; // 50% chance alive on edge
-                } else {
-                    arr[y][x] = 0; // 0% chance alive in center
-                }
-            }
-        }
-        return arr;
-    }
-
-    function drawGrid() {
-        ctx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
-
-        // // Check if dark mode is preferred
-        // const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-
-        const cellColor = CONFIG.isDarkMode ? '#ffffff10' : '#00000010'; // Lighter transparent white (0x10 = ~6% opacity)
-
-        for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-                if (grid[y][x]) {
-                    ctx.fillStyle = cellColor; // Even lighter transparent black (0x10 = ~6% opacity)
-                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-                }
-            }
-        }
-    }
-
-    function nextGeneration() {
-        const newGrid = [];
-        for (let y = 0; y < rows; y++) {
-            newGrid[y] = [];
-            for (let x = 0; x < cols; x++) {
-                let neighbors = 0;
-                for (let i = -1; i <= 1; i++) {
-                    for (let j = -1; j <= 1; j++) {
-                        if (i === 0 && j === 0) continue;
-                        const nx = x + j;
-                        const ny = y + i;
-                        if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
-                            neighbors += grid[ny][nx];
-                        }
-                    }
-                }
-                if (grid[y][x] === 1) {
-                    newGrid[y][x] = neighbors === 2 || neighbors === 3 ? 1 : 0;
-                } else {
-                    newGrid[y][x] = neighbors === 3 ? 1 : 0;
-                }
-            }
-        }
-        grid = newGrid;
-    }
-
-    function animate() {
-        drawGrid();
-        setTimeout(() => {
-            nextGeneration();
-            requestAnimationFrame(animate);
-        }, 100); // 100ms per generation (adjust as desired)
-    }
-
-    animate();
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        heroCanvas.width = window.innerWidth;
-        heroCanvas.height = window.innerHeight;
-    });
-}
-
-// Add this to your init function or create a new function called from init
-function initProjectHovers() {
-    const projectLinks = document.querySelectorAll('.project-titles-list a');
-    const visualBlock = document.querySelector('.project-visual-block');
-    const projectList = document.querySelector('.project-titles-list');
-    const nav = document.querySelector('.nav');
-    const heroCanvas = document.getElementById('hero-canvas');
-
-    // Track current state
-    let activeProjectId = null;
-    let isBlockVisible = false;
-
-    // Set initial state
-    gsap.set(visualBlock, {
-        transformOrigin: 'right center',
-        translateX: '20%',
-        opacity: 0
+// Smooth scrolling with Lenis
+function initSmoothScroll() {
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        smoothTouch: false,
+        touchMultiplier: 2,
     });
 
-    // Hide all visuals initially
-    document.querySelectorAll('.project-visual').forEach(visual => {
-        gsap.set(visual, { opacity: 0 });
+    // Connect Lenis to ScrollTrigger
+    ScrollTrigger.scrollerProxy(document.body, {
+        scrollTop(value) {
+            if (arguments.length) {
+                lenis.scrollTo(value);
+            }
+            return lenis.scroll;
+        },
+        getBoundingClientRect() {
+            return {
+                top: 0,
+                left: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        }
     });
 
-    projectLinks.forEach(link => {
-        // Extract project name from ID
-        const projectId = link.id.replace('-link', '');
+    // Update ScrollTrigger on scroll
+    lenis.on('scroll', ScrollTrigger.update);
 
-        // Mouse enter animation
-        link.addEventListener('mouseenter', (event) => {
-            // If a project is already hovered, don't do anything
-            if (!projectHovered) projectHovered = true;
+    // Define the animation loop that will run Lenis
+    gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+    });
 
-            // Kill any ongoing animations
-            gsap.killTweensOf('body');
-            gsap.killTweensOf(visualBlock);
-            document.querySelectorAll('.project-visual').forEach(visual => {
-                gsap.killTweensOf(visual);
-            });
-            gsap.killTweensOf(link);
+    // Remove the default RAF because we're handling it with gsap.ticker
+    // This ensures GSAP and Lenis are in sync
+    gsap.ticker.lagSmoothing(0);
 
-            // Update state
-            activeProjectId = projectId;
+    // Handle navigation click for smooth scrolling
+    document.querySelectorAll('nav a, .hero-cta a, .scroll-indicator').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
 
-            // Get the appropriate color based on CONFIG dark mode state
-            const colorScheme = CONFIG.isDarkMode ? 'dark' : 'light';
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
 
-            // Get color from CONFIG projects
-            let backgroundColor;
-            if (CONFIG.colors.projects[projectId]) {
-                backgroundColor = CONFIG.colors.projects[projectId][colorScheme];
-            } else {
-                // Fallback to theme colors if project not found
-                backgroundColor = CONFIG.isDarkMode ? CONFIG.colors.dark.bgSecondary : CONFIG.colors.light.bgSecondary;
-            }
-
-            // Hide all visuals
-            document.querySelectorAll('.project-visual').forEach(visual => {
-                visual.style.opacity = 0;
-            });
-
-            // Show the relevant visual
-            const projectVisual = document.getElementById(`${projectId}-visual`);
-            if (projectVisual) {
-                gsap.fromTo(projectVisual,
-                    { opacity: 0 }, // Only "from" properties
-                    {
-                        opacity: 1,
-                        duration: 0.4,
-                        ease: 'power2.out'
-                    }
-                );
-            }
-
-            gsap.to(heroCanvas, {
-                opacity: 0,
-                duration: 0.4,
-                ease: 'power2.inOut'
-            });
-
-            // Smoothly transition body background color
-            gsap.to('body', {
-                backgroundColor: backgroundColor,
-                duration: 0.2,
-                ease: 'power2.inOut'
-            });
-
-            // Show the visual block
-            gsap.fromTo(visualBlock,
-                {
-                    opacity: 0,
-                    translateX: '20%'
-                },
-                {
-                    opacity: 1,
-                    translateX: '0%',
-                    duration: 0.4,
-                    ease: 'power2.inOut',
-                    onStart: () => {
-                        isBlockVisible = true;
-                        activeProjectId = projectId;
-                    }
-                }
-            );
-
-            // Create underline effect similar to nav links
-            // First ensure there's a pseudo-element to animate
-            if (!link.querySelector('.link-underline')) {
-                const underline = document.createElement('span');
-                underline.classList.add('link-underline');
-                underline.style.position = 'absolute';
-                underline.style.bottom = '-5px';
-                underline.style.left = '0';
-                underline.style.width = '100%';
-                underline.style.height = '4px';
-                underline.style.backgroundColor = CONFIG.isDarkMode ? CONFIG.colors.dark.textPrimary : CONFIG.colors.light.textPrimary;
-                underline.style.transformOrigin = 'right';
-                underline.style.transform = 'scaleX(0)';
-                link.style.position = 'relative';
-                link.appendChild(underline);
-            }
-
-            // Animate the underline
-            gsap.to(link.querySelector('.link-underline'), {
-                transformOrigin: 'left',
-                scaleX: 1,
-                duration: 0.3,
-                ease: 'power2.inOut'
-            });
-        });
-
-        // Reset the project link on mouse leave
-        link.addEventListener('mouseleave', (event) => {
-            projectHovered = false;
-
-            console.log(event.target);
-            console.log(event.relatedTarget);
-
-            gsap.killTweensOf('body');
-            gsap.killTweensOf(nav);
-            gsap.killTweensOf(visualBlock);
-            gsap.killTweensOf(heroCanvas);
-
-            // If the mouse is leaving the project link and not going to another project link
-            if (event.target.classList.contains('project-title') !== event.relatedTarget.classList.contains('project-title')) {
-                // Reset state
-                gsap.set('body', { clearProps: 'backgroundColor' });
-                gsap.set(visualBlock, { opacity: 0 });
-                gsap.set(heroCanvas, { opacity: 1 });
-            }
-
-            // Reset underline
-            if (link.querySelector('.link-underline')) {
-                gsap.to(link.querySelector('.link-underline'), {
-                    scaleX: 0,
-                    duration: 0.3,
-                    transformOrigin: 'right',
-                    ease: 'power2.inOut',
-                    onComplete: () => {
-                        // Remove the underline element after animation
-                        link.querySelector('.link-underline').remove();
-                    }
+            if (target) {
+                lenis.scrollTo(target, {
+                    offset: 0,
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
                 });
             }
         });
     });
 }
 
-// Skills scene with Three.js
-function initSkillsScene() {
-    const skillsCanvas = document.getElementById('skills-canvas');
-
-    if (!skillsCanvas) return;
-
-    // Scene, camera and renderer
-    const skillsScene = new THREE.Scene();
-    const skillsCamera = new THREE.PerspectiveCamera(75, skillsCanvas.clientWidth / skillsCanvas.clientHeight, 0.1, 1000);
-    const skillsRenderer = new THREE.WebGLRenderer({ canvas: skillsCanvas, alpha: true, antialias: true });
-    skillsRenderer.setSize(skillsCanvas.clientWidth, skillsCanvas.clientHeight);
-    skillsRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Create sphere geometry
-    const geometry = new THREE.IcosahedronGeometry(1, 1);
-    const material = new THREE.MeshPhongMaterial({
-        color: 0x4f46e5,
-        wireframe: true,
-        emissive: 0x4f46e5,
-        emissiveIntensity: 0.5,
-        transparent: true,
-        opacity: 0.8
-    });
-
-    // Create mesh
-    skillsSphere = new THREE.Mesh(geometry, material);
-    skillsScene.add(skillsSphere);
-
-    // Add lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    skillsScene.add(ambientLight);
-
-    const pointLight = new THREE.PointLight(0x4f46e5, 1);
-    pointLight.position.set(2, 2, 2);
-    skillsScene.add(pointLight);
-
-    // Position camera
-    skillsCamera.position.z = 2.5;
-
-    // Scroll-based animation
-    ScrollTrigger.create({
-        trigger: '.skills',
-        start: 'top bottom',
-        end: 'bottom top',
-        onUpdate: (self) => {
-            // Rotate sphere based on scroll position
-            skillsSphere.rotation.y = self.progress * Math.PI * 2;
-        }
-    });
-
-    // Animation
-    const animateSkills = () => {
-        requestAnimationFrame(animateSkills);
-
-        // Continuous slight rotation
-        skillsSphere.rotation.x += 0.002;
-
-        // Render
-        skillsRenderer.render(skillsScene, skillsCamera);
-    };
-
-    animateSkills();
-
-    // Handle resize
-    const handleResize = () => {
-        const width = skillsCanvas.clientWidth;
-        const height = skillsCanvas.clientHeight;
-
-        // Update camera
-        skillsCamera.aspect = width / height;
-        skillsCamera.updateProjectionMatrix();
-
-        // Update renderer
-        skillsRenderer.setSize(width, height);
-    };
-
-    window.addEventListener('resize', handleResize);
-}
 
 // Handle window resize for ScrollTrigger
 window.addEventListener('resize', () => {
