@@ -16,7 +16,7 @@
     --letics-bg: #ff4b4b;
 
     /* Typography */
-    --font-primary: 'Space Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 
     /* Spacing */
@@ -192,7 +192,7 @@ textarea {
     height: 8px;
     background-color: white;
     border-radius: 50%;
-    /* transform: translate(-50%, -50%); */
+    transform: translate(-50%, -50%);
 }
 
 /* Navigation */
@@ -277,6 +277,21 @@ textarea {
     padding: 0 var(--spacing-md);
     max-width: 900px;
     margin: 0 auto;
+    text-align: center;
+}
+
+.hero-opener {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    z-index: 10;
+    pointer-events: none;
+    white-space: nowrap;
+    width: 100vw;
     text-align: center;
 }
 
@@ -923,6 +938,11 @@ section {
     :root {
         --spacing-lg: 3rem;
         --spacing-xl: 5rem;
+    }
+
+    .hero-opener {
+        font-size: clamp(2rem, 8vw, 3rem);
+        padding: 0 var(--spacing-sm);
     }
 
     .hero-title {

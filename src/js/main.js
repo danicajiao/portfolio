@@ -42,6 +42,9 @@ window.addEventListener('load', init);
 
 function init() {
 
+    // Disable scroll initially until page is loaded
+    document.body.style.overflow = 'hidden';
+
     // Initialize theme listener for dark mode support
     initThemeListener();
 
@@ -50,15 +53,12 @@ function init() {
     // Initialize smooth scrolling first
     // initSmoothScroll();
 
-    // Initialize animations (sets initial states)
-    // initAnimations();
-
     // Initialize custom cursor
     initCursor();
 
     initNavigation();
 
-    // Initialize 3D scenes
+    // Initialize 2D scenes
     initHeroScene();
 
     initProjectHovers();
@@ -67,6 +67,9 @@ function init() {
 
     // Initialize interactive elements
     initForm();
+
+    // Initialize animations (sets initial states)
+    initAnimations();
 
     // Force ScrollTrigger to recalculate all scrollbar-related measurements
     // ScrollTrigger.refresh(true);
@@ -241,7 +244,8 @@ function initCursor() {
         gsap.to(cursor, {
             x: e.clientX,
             y: e.clientY,
-            duration: 0.05
+            duration: 0.5,
+            ease: 'power3.out'
         });
     });
 
@@ -286,19 +290,23 @@ function initNavigation() {
     const nav = document.querySelector('.nav');
 
     // Set initial state for nav
-    gsap.set(nav, {
-        backgroundColor: 'transparent',
-        backdropFilter: 'none',
-        padding: '2rem 0',
-        boxShadow: 'none'
-    });
+    if (window.scrollY > 100) {
+        gsap.set(nav, {
+            backdropFilter: 'blur(10px)',
+            padding: '1rem 0',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+        });
+    } else {
+        gsap.set(nav, {
+            backdropFilter: 'none',
+            padding: '2rem 0',
+            boxShadow: 'none'
+        });
+    }
 
     window.addEventListener('scroll', () => {
-        // Only change nav color on scroll if no project is being hovered
-        // if (!projectHovered) {
         if (window.scrollY > 100) {
             gsap.to(nav, {
-                // backgroundColor: '#ffffffe6',
                 backdropFilter: 'blur(10px)',
                 padding: '1rem 0',
                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
@@ -306,7 +314,6 @@ function initNavigation() {
             });
         } else {
             gsap.to(nav, {
-                // backgroundColor: 'transparent',
                 backdropFilter: 'none',
                 padding: '2rem 0',
                 boxShadow: 'none',
@@ -449,7 +456,7 @@ function initHeroScene() {
     const ctx = heroCanvas.getContext('2d');
 
     // Game of Life settings
-    const cellSize = 10;
+    const cellSize = 7;
     const cols = Math.floor(heroCanvas.width / cellSize);
     const rows = Math.floor(heroCanvas.height / cellSize);
     let grid = createRandomGrid(cols, rows);
@@ -779,6 +786,47 @@ function initForm() {
     }
 }
 
+// Main GSAP animations
+function initAnimations() {
+    // Set initial states for animations
+    if (window.scrollY < 100) {
+        gsap.set('.hero-title-line', { y: 50, opacity: 0 });
+        gsap.set('.hero-title-highlight', { y: 100, opacity: 0 });
+        gsap.set('.hero-description', { y: 50, opacity: 0 });
+        gsap.set('.hero-cta', { y: 50, opacity: 0 });
+        gsap.set('.scroll-indicator', { opacity: 0 });
+        gsap.set('.nav', { y: -100, opacity: 0 });
+    } else {
+        gsap.set('.hero-opener', { opacity: 0 });
+    }
+
+    // Set initial states for sections
+    gsap.utils.toArray('.section-title').forEach(title => {
+        gsap.set(title, { y: 50, opacity: 0 });
+    });
+
+    // Projects animation setup
+    gsap.utils.toArray('.project-link').forEach(project => {
+        gsap.set(project, {
+            y: 50,
+            opacity: 0,
+            pointerEvents: 'none' // Disable pointer events initially 
+        });
+    });
+
+    // About section elements
+    gsap.set('.about-image-wrapper', { scale: 0.8, opacity: 0 });
+    gsap.set('.about-text p', { y: 30, opacity: 0 });
+    gsap.set('.about-cta', { y: 30, opacity: 0 });
+
+    // Skills section elements
+    gsap.set('.skills-category', { y: 30, opacity: 0 });
+
+    // Contact section elements
+    gsap.set('.contact-info', { x: -50, opacity: 0 });
+    gsap.set('.contact-form', { x: 50, opacity: 0 });
+}
+
 // Loading sequence
 function startLoadingSequence() {
     const loader = document.querySelector('.loader');
@@ -810,85 +858,70 @@ function startLoadingSequence() {
     }, 100);
 }
 
-// Main GSAP animations
-function initAnimations() {
-    // Set initial states for animations
-    gsap.set('.hero-title-line', { y: 50, opacity: 0 });
-    gsap.set('.hero-title-highlight', { y: 100, opacity: 0 });
-    gsap.set('.hero-description', { y: 50, opacity: 0 });
-    gsap.set('.hero-cta', { y: 50, opacity: 0 });
-    gsap.set('.scroll-indicator', { opacity: 0 });
-    gsap.set('.nav', { y: -100, opacity: 0 });
-
-    // Set initial states for sections
-    gsap.utils.toArray('.section-title').forEach(title => {
-        gsap.set(title, { y: 50, opacity: 0 });
-    });
-
-    // Projects animation setup
-    gsap.utils.toArray('.project-titles-list a').forEach(project => {
-        gsap.set(project, {
-            y: 50,
-            opacity: 0,
-            pointerEvents: 'none' // Disable pointer events initially 
-        });
-    });
-
-    // About section elements
-    gsap.set('.about-image-wrapper', { scale: 0.8, opacity: 0 });
-    gsap.set('.about-text p', { y: 30, opacity: 0 });
-    gsap.set('.about-cta', { y: 30, opacity: 0 });
-
-    // Skills section elements
-    gsap.set('.skills-category', { y: 30, opacity: 0 });
-
-    // Contact section elements
-    gsap.set('.contact-info', { x: -50, opacity: 0 });
-    gsap.set('.contact-form', { x: 50, opacity: 0 });
-}
-
 // Start animations after loading
 function startPageAnimations() {
-    // Hero section animations
-    const heroTimeline = gsap.timeline();
 
-    heroTimeline
-        .to('.hero-title-line', {
-            y: 0,
-            opacity: 1,
-            duration: 1.2,
-            stagger: 0.2,
-            ease: 'power3.out'
-        })
-        .to('.hero-title-highlight', {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: 'power3.out'
-        }, '-=0.5')
-        .to('.nav', {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: 'power3.out'
-        })
-        .to('.hero-description', {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: 'power3.out'
-        }, '-=0.8')
-        .to('.hero-cta', {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: 'power3.out'
-        }, '-=0.8')
-        .to('.scroll-indicator', {
-            opacity: 1,
-            duration: 1,
-            ease: 'power3.out'
-        }, '-=0.5');
+    if (window.scrollY < 100) {
+        // Hero section animations
+        const heroTimeline = gsap.timeline();
+
+        heroTimeline
+            .to('.hero-opener .hero-title-line', {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power3.out'
+            })
+            .to('.hero-opener .hero-title-highlight', {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out'
+            }, '-=0.1')
+            // Fade out the hero-opener
+            .to('.hero-opener', {
+                opacity: 0,
+                duration: 0.5,
+                ease: 'power2.out'
+            })
+            // Then show the main hero-title
+            .to('.hero-title .hero-title-line', {
+                y: 0,
+                opacity: 1,
+                duration: 1.2,
+                stagger: 0.2,
+                ease: 'power3.out'
+            })
+            .to('.nav', {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out'
+            }, '-=0.8')
+            .to('.hero-description', {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out'
+            }, '-=0.8')
+            .to('.hero-cta', {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out',
+                onComplete: () => {
+                    // Re-enable scroll after hero animations
+                    document.body.style.overflow = 'auto';
+                }
+            }, '-=0.8')
+            .to('.scroll-indicator', {
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out'
+            }, '-=0.5');
+    } else {
+        document.body.style.overflow = 'auto';
+    }
 
     // Bounce animation for scroll indicator
     gsap.to('.scroll-arrow', {
@@ -916,7 +949,7 @@ function startPageAnimations() {
     });
 
     // Project animations
-    gsap.utils.toArray('.project-titles-list a').forEach((project, index) => {
+    gsap.utils.toArray('.project-link').forEach((project, index) => {
         gsap.to(project, {
             scrollTrigger: {
                 trigger: project,
@@ -926,7 +959,6 @@ function startPageAnimations() {
             y: 0,
             opacity: 1,
             duration: 1,
-            delay: index * 0.2,
             ease: 'power3.out',
             onComplete: () => {
                 project.style.pointerEvents = 'auto'; // Enable pointer events after animation
