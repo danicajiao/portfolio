@@ -4,8 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import Lenis from 'lenis';
-import { animateProject } from './project-link-animations';
+import Lenis from '@studio-freight/lenis';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
@@ -320,10 +319,10 @@ function initNavigation() {
         });
     }
 
-    // console.debug(`Current scrollY position: ${window.scrollY}`)
+    console.debug(`Current scrollY position: ${window.scrollY}`)
 
     window.addEventListener('scroll', () => {
-        // console.debug(window.scrollY);
+        console.debug(window.scrollY);
 
         if (window.scrollY > 100) {
             gsap.to(nav, {
@@ -476,7 +475,7 @@ function initHeroScene() {
     const ctx = heroCanvas.getContext('2d');
 
     // Game of Life settings
-    const cellSize = 10;
+    const cellSize = 7;
     const cols = Math.floor(heroCanvas.width / cellSize);
     const rows = Math.floor(heroCanvas.height / cellSize);
     let grid = createRandomGrid(cols, rows);
@@ -691,18 +690,13 @@ function initProjectHovers() {
             // If a project is already hovered, don't do anything
             if (!projectHovered) projectHovered = true;
 
-            // Kill any ongoing animations on global/shared elements
+            // Kill any ongoing animations
+            gsap.killTweensOf('body', "backgroundColor");
             gsap.killTweensOf(visuals);
-            gsap.killTweensOf(heroCanvas);
-            gsap.killTweensOf('.nav');
-
             document.querySelectorAll('.panel').forEach(panel => {
                 gsap.killTweensOf(panel);
             });
-
-            document.querySelectorAll('.project-bg').forEach(bg => {
-                gsap.killTweensOf(bg);
-            });
+            gsap.killTweensOf(link, "backgroundColor");
 
             // Update state
             activeProjectId = projectId;
@@ -716,16 +710,138 @@ function initProjectHovers() {
 
             // Hide all backgrounds
             document.querySelectorAll('.project-bg').forEach(projectBg => {
-                gsap.set(projectBg, { opacity: 0 });
+                projectBg.style.opacity = 0;
             });
 
             // Hide all panels
             document.querySelectorAll('.panel').forEach(panel => {
-                gsap.set(panel, { opacity: 0 });
+                panel.style.opacity = 0;
             });
 
-            // Animate the project visuals in
-            animateProject(projectId, 'enter', CONFIG);
+            if (event.target.id === "schwab-link") {
+                // Schwab specific animations
+                // Add specific animations or styles for Schwab project
+
+                // Show the project's background
+                const projectBg = document.getElementById(`${projectId}-bg`);
+                if (projectBg) {
+                    gsap.to(projectBg, {
+                        opacity: 1,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+
+                    if (projectBg.id === "schwab-bg") {
+                        animateGridSquares();
+                    }
+                }
+
+                const projectPanelLeft = document.getElementById(`${projectId}-panel-left`);
+                const projectPanelRight = document.getElementById(`${projectId}-panel-right`);
+
+                if (projectPanelLeft) {
+                    gsap.to(projectPanelLeft, {
+                        opacity: 1,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+
+                if (projectPanelRight) {
+                    gsap.to(projectPanelRight, {
+                        opacity: 1,
+                        duration: 0.4,
+                        ease: 'power2.out'
+                    });
+
+                    // if (projectPanelRight.id == "cove-panel-right") {
+                    //     // Add specific animations or styles for Cove project
+                    //     gsap.to('#cove-geo-1', {
+                    //         rotate: 90,
+                    //         delay: 1,
+                    //         ease: 'elastic.inOut',
+                    //         duration: 3,
+                    //         repeat: -1,
+                    //         repeatDelay: 1,
+                    //         transformOrigin: 'center center' // Use center instead of pixel coordinates
+                    //     });
+                    // }
+                }
+
+
+                let dot = document.getElementById('dot1');
+                let maskCircle = document.getElementById('mask-circle');
+
+                let spinners = document.querySelectorAll('.spinner');
+                let successIndicators = document.querySelectorAll('.success-indicator');
+
+                gsap.fromTo(spinners,
+                    {
+                        rotate: 0
+                    },
+                    {
+                        rotate: 360,
+                        duration: 1,
+                        ease: 'linear',
+                        repeat: -1,
+                        transformOrigin: 'center center'
+                    }
+                );
+
+                let timeline = gsap.timeline();
+
+                // Animate both the mask circle (to reveal the path) and the dot together
+                timeline.to([maskCircle, dot], {
+                    motionPath: {
+                        path: "#line-path",
+                        start: 0,
+                        end: 0.19
+                    },
+                    duration: 2,
+                    ease: "power2.out",
+                }).to(successIndicators[0], {
+                    opacity: 1,
+                }).to([maskCircle, dot], {
+                    motionPath: {
+                        path: "#line-path",
+                        start: 0.19,
+                        end: 0.405
+                    },
+                    duration: 2,
+                    ease: "power2.out",
+                }).to(successIndicators[1], {
+                    opacity: 1,
+                }).to([maskCircle, dot], {
+                    motionPath: {
+                        path: "#line-path",
+                        start: 0.405,
+                        end: 0.62
+                    },
+                    duration: 2,
+                    ease: "power2.out",
+                }).to(successIndicators[2], {
+                    opacity: 1,
+                }).to([maskCircle, dot], {
+                    motionPath: {
+                        path: "#line-path",
+                        start: 0.62,
+                        end: 0.832
+                    },
+                    duration: 2,
+                    ease: "power2.out",
+                }).to(successIndicators[3], {
+                    opacity: 1,
+                }).to([maskCircle, dot], {
+                    motionPath: {
+                        path: "#line-path",
+                        start: 0.832,
+                        end: 1
+                    },
+                    duration: 2,
+                    ease: "power2.out",
+                });
+            }
+
 
             // Show the relevant left and right panels
             const panelLeft = document.querySelector(`.panel-left`);
@@ -802,7 +918,28 @@ function initProjectHovers() {
                 gsap.set(heroCanvas, { opacity: 1 });
             }
 
-            animateProject(projectId, 'leave', CONFIG);
+            if (event.target.id === "schwab-link") {
+                // Reset specific elements for Schwab project
+                const bg = document.getElementById('schwab-bg');
+                const squares = document.querySelectorAll('.grid-square');
+                const spinners = document.querySelectorAll('.spinner');
+                const successIndicators = document.querySelectorAll('.success-indicator');
+
+                gsap.killTweensOf(bg);
+                gsap.killTweensOf(squares);
+                gsap.killTweensOf(spinners);
+                gsap.killTweensOf(successIndicators);
+
+                gsap.set(bg, { opacity: 0 });
+                gsap.set(squares, { fill: 'none' });
+                gsap.set(successIndicators, { opacity: 0 });
+            } else if (event.target.id === "cove-link") {
+                const bg = document.getElementById('cove-bg');
+
+                gsap.killTweensOf(bg);
+
+                gsap.set(bg, { opacity: 0 });
+            }
 
             // Reset underline
             gsap.to(underline, {

@@ -12,8 +12,8 @@
     --schwab-bg: #c7edff;
     --cove-bg: #ffe9c7;
     --schwapp-bg: #c7edff;
-    --safelinc-bg: #3fb550;
-    --letics-bg: #ff4b4b;
+    --safelinc-bg: #7da984;
+    --letics-bg: #ffbcbc;
 
     /* Typography */
     --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -47,8 +47,8 @@
     --schwab-bg: #c7edff;
     --cove-bg: #ffe9c7;
     --schwapp-bg: #c7edff;
-    --safelinc-bg: #3fb550;
-    --letics-bg: #ff4b4b;
+    --safelinc-bg: #7da984;
+    --letics-bg: #ffbcbc;
 }
 
 /* Dark theme overrides */
@@ -202,7 +202,7 @@ textarea {
     left: 0;
     width: 100%;
     padding: var(--spacing-md) 0;
-    z-index: 1000;
+    z-index: 20;
 }
 
 /* .nav.scrolled {
@@ -216,7 +216,7 @@ textarea {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 90%;
+    /* width: 90%; */
     max-width: var(--container-max-width);
     margin: 0 auto;
 }
@@ -224,17 +224,18 @@ textarea {
 .logo a {
     font-size: 1.5rem;
     font-weight: 700;
-    letter-spacing: 1px;
+    /* letter-spacing: 1px; */
+    /* display: block; */
 }
 
 .nav-links {
     display: flex;
+    gap: var(--spacing-md);
 }
 
 .nav-link {
-    margin-left: var(--spacing-md);
     position: relative;
-    font-weight: 500;
+    font-weight: 510;
 }
 
 .menu-toggle {
@@ -270,7 +271,7 @@ textarea {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: -2;
 }
 
 .hero-content {
@@ -320,12 +321,14 @@ textarea {
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
+    /* border: 2px solid purple; */
 }
 
 .hero-cta {
     display: flex;
     justify-content: center;
     gap: var(--spacing-sm);
+    /* border: 2px solid orange; */
 }
 
 .scroll-indicator {
@@ -423,62 +426,103 @@ section {
 }
 
 .work {
-    height: 100vh;
+    /* height: 100vh; */
+    z-index: 10;
 }
 
 .project-list {
     display: flex;
+    font-size: 5.4rem;
+    line-height: 1;
     flex-direction: column;
+    font-weight: 700;
     /* Control the container width */
     width: 40%;
-    /* Top Right Bottom Left */
-    margin: 0 0 0 30%;
+    margin: 0 35% 0 25%;
     /* Left align the items */
     align-items: flex-start;
-    /* border: 2px solid blue; */
+    border: 2px solid green;
     /* Disable pointer events for the project-titles-list */
     /* pointer-events: none; */
+    height: 100vh;
+    position: relative;
+    /* Add this */
+    z-index: 10;
 }
 
 .project-link {
-    font-size: 3.5rem;
-    font-weight: 700;
+    /* font-size: 4.5rem; */
+    /* line-height: 1.2; */
     position: relative;
     display: inline-block;
     cursor: pointer;
-    /* border: 2px solid orange; */
+    border: 2px solid green;
     /* pointer-events: all; */
 }
 
-.project-visual-block {
+.project-visuals {
     position: fixed;
-    top: 0;
-    right: 0;
-    /* Width of the block - adjust as needed */
-    width: 30%;
-    /* Use viewport height to ensure full screen height */
-    height: 100vh;
-    /* Start off-screen */
-    /* transform: translateX(100%); */
-    /* Ensure it appears above ALL other content */
-    z-index: 2000;
-    /* Allow clicking through the block */
-    pointer-events: none;
-
-    /* Add centering properties */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* border: 2px solid red; */
-}
-
-.project-visual {
-    /* Position all visuals in the same place to create overlap */
-    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
+    pointer-events: none;
+    /* display: grid; */
+    /* grid-template-columns: 25% 40% 35%; */
+    /* left (30%), center gap (40%), right (30%) */
+    /* border: 2px solid greenyellow; */
+}
+
+.project-visual-bgs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: inherit;
+    height: inherit;
+    z-index: -1;
+    /* background-color: red; */
+}
+
+.project-bg {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+}
+
+.project-visual-panels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: inherit;
+    height: inherit;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 25% 40% 35%;
+    /* background-color: cadetblue; */
+}
+
+.panel-left {
+    grid-column: 1;
+    pointer-events: none;
+    /* border: 2px solid blue; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* border: 2px solid peachpuff; */
+}
+
+.panel-right {
+    grid-column: 3;
+    pointer-events: none;
+    /* border: 2px solid orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.panel {
+    /* Position all visuals in the same place to create overlap */
+    position: absolute;
 
     /* Center the content */
     display: flex;
@@ -488,24 +532,10 @@ section {
     /* Hide by default */
     opacity: 0;
     pointer-events: none;
-    /* border: 2px solid green; */
+    /* border: 2px solid plum; */
 }
 
-/* Style the images inside the visual block */
-#schwab-visual {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    /* border: 2px solid blue; */
-}
-
-#schwab-visual img {
-    max-width: 50%;
-    max-height: 50%;
-    object-fit: contain;
-}
-
-#cove-visual {
+#schwapp-panel-right {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
@@ -514,9 +544,22 @@ section {
     align-items: center;
 }
 
-#cove-visual img {
-    max-width: 60%;
+#schwapp-panel-right img:nth-child(1) {
+    max-width: 50%;
     object-fit: contain;
+    position: relative;
+    z-index: 20;
+    /* Offset from center - adjust values as needed */
+    transform: translateX(50px) translateY(50px);
+}
+
+#schwapp-panel-right img:nth-child(2) {
+    max-width: 50%;
+    object-fit: contain;
+    position: relative;
+    z-index: 10;
+    /* Offset from center - adjust values as needed */
+    transform: translateX(0) translateY(-50px);
 }
 
 /* Work Section */
