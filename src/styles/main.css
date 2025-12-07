@@ -1,4 +1,5 @@
 /* main.css */
+        
 :root {
     /* Light mode colors - default */
     --color-bg-primary: #ffffff;
@@ -198,6 +199,9 @@ textarea {
 /* Navigation */
 .nav {
     position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     top: 0;
     left: 0;
     width: 100%;
@@ -216,9 +220,10 @@ textarea {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* width: 90%; */
+    width: 90%;
     max-width: var(--container-max-width);
-    margin: 0 auto;
+    /* margin: 0 auto; */
+    /* padding: 0 var(--spacing-sm); */
 }
 
 .logo a {
@@ -253,15 +258,51 @@ textarea {
     background-color: var(--color-text-primary);
 }
 
+
+/* Section Styles */
+section {
+    /* padding: var(--spacing-xl) 0; */
+    min-height: 50vh;
+    width: 100vw;
+    /* height: 100vh; */
+    /* Minimum height for sections */
+    position: relative;
+    border: 1px solid red;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -0.625rem;
+    left: 0;
+    width: 3.75rem;
+    height: 0.25rem;
+    background-color: var(--color-accent);
+}
+
+/* .section-cta {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+} */
+
 /* Hero Section */
 .hero {
     position: relative;
-    height: 100vh;
     /* Use viewport height */
-    min-height: 600px;
+    height: 100vh;
     /* Minimum height for smaller screens */
+    min-height: 600px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
     overflow: hidden;
 }
 
@@ -292,7 +333,7 @@ textarea {
     z-index: 10;
     pointer-events: none;
     white-space: nowrap;
-    width: 100vw;
+    /* width: 100vw; */
     text-align: center;
 }
 
@@ -331,36 +372,6 @@ textarea {
     /* border: 2px solid orange; */
 }
 
-.scroll-indicator {
-    position: absolute;
-    bottom: var(--spacing-md);
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    opacity: 0.7;
-    /* transition: opacity var(--transition-fast); */
-}
-
-.scroll-indicator:hover {
-    opacity: 1;
-}
-
-.scroll-indicator span {
-    font-size: 0.9rem;
-    margin-bottom: var(--spacing-xs);
-    letter-spacing: 1px;
-}
-
-.scroll-arrow {
-    width: 20px;
-    height: 20px;
-    border-right: 2px solid var(--color-text-primary);
-    border-bottom: 2px solid var(--color-text-primary);
-    transform: rotate(45deg);
-}
-
 /* Buttons */
 .btn {
     display: inline-block;
@@ -394,39 +405,41 @@ textarea {
     transform: translateY(-2px);
 } */
 
-/* Section Styles */
-section {
-    padding: var(--spacing-xl) 0;
-    min-height: 50vh;
-    /* Minimum height for sections */
-    position: relative;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-lg);
-    position: relative;
-    display: inline-block;
-}
-
-.section-title::after {
-    content: '';
+.scroll-indicator {
     position: absolute;
-    bottom: -10px;
-    left: 0;
-    width: 60px;
-    height: 4px;
-    background-color: var(--color-accent);
+    bottom: var(--spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.7;
+    /* transition: opacity var(--transition-fast); */
 }
 
-.section-cta {
-    margin-top: var(--spacing-lg);
-    text-align: center;
+.scroll-indicator:hover {
+    opacity: 1;
+}
+
+.scroll-indicator span {
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-xs);
+    letter-spacing: 1px;
+}
+
+.scroll-arrow {
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid var(--color-text-primary);
+    border-bottom: 2px solid var(--color-text-primary);
+    transform: rotate(45deg);
 }
 
 .work {
-    /* height: 100vh; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
     z-index: 10;
 }
 
@@ -441,10 +454,10 @@ section {
     margin: 0 35% 0 25%;
     /* Left align the items */
     align-items: flex-start;
-    border: 2px solid green;
+    /* border: 2px solid green; */
     /* Disable pointer events for the project-titles-list */
     /* pointer-events: none; */
-    height: 100vh;
+    /* height: 100vh; */
     position: relative;
     /* Add this */
     z-index: 10;
@@ -456,7 +469,7 @@ section {
     position: relative;
     display: inline-block;
     cursor: pointer;
-    border: 2px solid green;
+    /* border: 2px solid green; */
     /* pointer-events: all; */
 }
 
@@ -890,7 +903,7 @@ section {
 }
 
 /* Animations */
-@keyframes rotate {
+/* @keyframes rotate {
     from {
         transform: rotate(0deg);
     }
@@ -898,7 +911,7 @@ section {
     to {
         transform: rotate(360deg);
     }
-}
+} */
 
 /* Media Queries */
 @media (max-width: 992px) {
@@ -925,6 +938,17 @@ section {
 @media (max-width: 768px) {
     .section-title {
         font-size: 2rem;
+    }
+
+    .project-visuals {
+        display: none;
+    }
+
+    .project-list {
+        width: 100%;
+        margin: 0;
+        padding: 0 var(--spacing-md);
+        font-size: clamp(3rem, 18vw, 5.4rem);
     }
 
     .nav-links {

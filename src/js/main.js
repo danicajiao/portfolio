@@ -239,7 +239,6 @@ function initThemeListener() {
 }
 
 function initLoader() {
-    const loader = document.querySelector('.loader');
     const loaderCircle = document.querySelector('.loader-circle');
 
     // The loader background is now handled by CSS custom properties
