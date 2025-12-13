@@ -730,7 +730,9 @@ section {
 
 .skills-visual {
     position: relative;
-    height: 400px;
+    height: 600px;
+    width: 600px;
+    /* border: 2px solid red; */
 }
 
 #skills-canvas {

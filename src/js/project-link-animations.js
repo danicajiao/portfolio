@@ -38,31 +38,38 @@ const getProjectElements = (projectId) => {
  * @returns {Object} Object containing Schwab animation element references
  */
 const getSchwabSpecificElements = () => {
-    const maskCircle = document.getElementById('mask-circle');
+    const circle = document.getElementById('circle-svg');
     const squares = document.querySelectorAll('.grid-square');
     const spinners = document.querySelectorAll('.spinner');
+    const inProgressIndicators = document.querySelectorAll('.in-progress-indicator');
     const successIndicators = document.querySelectorAll('.success-indicator');
 
-    if (!maskCircle) {
-        console.warn('[getSchwabSpecificElements] Missing mask-circle element');
-    }
-
-    if (spinners.length === 0) {
-        console.warn('[getSchwabSpecificElements] No spinner elements found');
-    }
-
-    if (successIndicators.length === 0) {
-        console.warn('[getSchwabSpecificElements] No success-indicator elements found');
+    if (!circle) {
+        console.warn('[getSchwabSpecificElements] Missing circle-svg element');
     }
 
     if (squares.length === 0) {
         console.warn('[getSchwabSpecificElements] No grid-square elements found');
     }
 
+    if (spinners.length === 0) {
+        console.warn('[getSchwabSpecificElements] No spinner elements found');
+    }
+
+    if (inProgressIndicators.length === 0) {
+        console.warn('[getSchwabSpecificElements] No in-progress-indicator elements found');
+    }
+
+    if (successIndicators.length === 0) {
+        console.warn('[getSchwabSpecificElements] No success-indicator elements found');
+    }
+
+
     return {
-        maskCircle,
+        circle,
         squares,
         spinners,
+        inProgressIndicators,
         successIndicators
     };
 };
@@ -93,7 +100,7 @@ const getCoveSpecificElements = () => {
 const schwabAnimations = {
     enter: (projectId, config) => {
         const { bg, leftPanel, rightPanel } = getProjectElements(projectId);
-        const { maskCircle, squares, spinners, successIndicators } = getSchwabSpecificElements();
+        const { circle, squares, spinners, inProgressIndicators, successIndicators } = getSchwabSpecificElements();
 
         if (!bg) return;
 
@@ -122,55 +129,57 @@ const schwabAnimations = {
 
         let timeline = gsap.timeline();
 
-        // Animate both the mask circle (to reveal the path) and the dot together
-        timeline.to(maskCircle, {
+        timeline.to(circle, {
             motionPath: {
-                path: "#line-path",
-                start: 0,
-                end: 0.19
+                path: "#line-path0",
+                start: 1,
+                end: 0  
             },
-            duration: 2,
-            ease: "power2.out",
+            duration: 3
         }).to(successIndicators[0], {
             opacity: 1,
-        }).to(maskCircle, {
+        },).to(inProgressIndicators[0], {
+            opacity: 0,
+        }, "<").to(circle, {
             motionPath: {
-                path: "#line-path",
-                start: 0.19,
-                end: 0.405
+                path: "#line-path1",
+                start: 1,
+                end: 0
             },
-            duration: 2,
-            ease: "power2.out",
+            duration: 3
         }).to(successIndicators[1], {
             opacity: 1,
-        }).to(maskCircle, {
+        },).to(inProgressIndicators[1], {
+            opacity: 0,
+        }, "<").to(circle, {
             motionPath: {
-                path: "#line-path",
-                start: 0.405,
-                end: 0.62
-            },
-            duration: 2,
-            ease: "power2.out",
-        }).to(successIndicators[2], {
-            opacity: 1,
-        }).to(maskCircle, {
-            motionPath: {
-                path: "#line-path",
-                start: 0.62,
-                end: 0.832
-            },
-            duration: 2,
-            ease: "power2.out",
-        }).to(successIndicators[3], {
-            opacity: 1,
-        }).to(maskCircle, {
-            motionPath: {
-                path: "#line-path",
-                start: 0.832,
+                path: "#line-path2",
+                start: 0,
                 end: 1
             },
-            duration: 2,
-            ease: "power2.out",
+            duration: 3
+        }).to(successIndicators[2], {
+            opacity: 1,
+        },).to(inProgressIndicators[2], {
+            opacity: 0,
+        }, "<").to(circle, {
+            motionPath: {
+                path: "#line-path3",
+                start: 1,
+                end: 0
+            },
+            duration: 3
+        }).to(successIndicators[3], {
+            opacity: 1,
+        },).to(inProgressIndicators[3], {
+            opacity: 0,
+        }, "<").to(circle, {
+            motionPath: {
+                path: "#line-path4",
+                start: 1,
+                end: 0
+            },
+            duration: 3
         });
     },
 
@@ -180,12 +189,13 @@ const schwabAnimations = {
 
         if (elements.length === 0) return;
 
-        const { maskCircle, squares, spinners, successIndicators } = getSchwabSpecificElements();
+        const { circle, squares, spinners, inProgressIndicators, successIndicators } = getSchwabSpecificElements();
 
-        gsap.killTweensOf([maskCircle, squares, spinners, successIndicators]);
+        gsap.killTweensOf([circle, squares, spinners, inProgressIndicators, successIndicators]);
 
         // gsap.set(bg, { opacity: 0 });
         gsap.set(squares, { fill: 'none' });
+        gsap.set(inProgressIndicators, { opacity: 1 });
         gsap.set(successIndicators, { opacity: 0 });
     }
 };

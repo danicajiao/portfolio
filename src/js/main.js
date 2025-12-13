@@ -1,5 +1,6 @@
 // main.js
 import * as THREE from 'three';
+import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
@@ -20,7 +21,7 @@ ScrollTrigger.defaults({
 
 // Initialize variables
 let camera, scene, renderer;
-let heroMesh, skillsSphere;
+let heroMesh, skillsCube;
 let particles;
 const loader = new THREE.TextureLoader();
 let projectHovered = false;
@@ -814,7 +815,7 @@ function initProjectHovers() {
     });
 }
 
-// Skills scene with Three.js
+// Skills scene with Three.js ASCII effect
 function initSkillsScene() {
     const skillsCanvas = document.getElementById('skills-canvas');
 
@@ -822,57 +823,109 @@ function initSkillsScene() {
 
     // Scene, camera and renderer
     const skillsScene = new THREE.Scene();
-    const skillsCamera = new THREE.PerspectiveCamera(75, skillsCanvas.clientWidth / skillsCanvas.clientHeight, 0.1, 1000);
-    const skillsRenderer = new THREE.WebGLRenderer({ canvas: skillsCanvas, alpha: true, antialias: true });
+    const skillsCamera = new THREE.PerspectiveCamera(10, skillsCanvas.clientWidth / skillsCanvas.clientHeight, 0.1, 1000);
+    const skillsRenderer = new THREE.WebGLRenderer({ 
+        canvas: skillsCanvas,
+        antialias: true,
+        alpha: true // Enable transparency
+    });
     skillsRenderer.setSize(skillsCanvas.clientWidth, skillsCanvas.clientHeight);
-    skillsRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    skillsRenderer.setPixelRatio(window.devicePixelRatio);
+    skillsRenderer.setClearColor(0x000000, 0); // Transparent background
 
-    // Create sphere geometry
-    const geometry = new THREE.IcosahedronGeometry(1, 1);
-    const material = new THREE.MeshPhongMaterial({
-        color: 0x4f46e5,
-        wireframe: true,
-        emissive: 0x4f46e5,
-        emissiveIntensity: 0.5,
-        transparent: true,
-        opacity: 0.8
+    // Create ASCII effect with resolution control
+    // Invert: false maps bright pixels (white) to end of string, dark pixels (black) to start
+    const asciiEffect = new AsciiEffect(skillsRenderer, ' .<>#', { 
+        invert: false, // White areas -> #, Black areas -> . (space)
+        resolution: 0.17 // Higher resolution = smaller ASCII characters (try 0.2-0.3)
+    });
+    asciiEffect.setSize(skillsCanvas.clientWidth, skillsCanvas.clientHeight);
+    asciiEffect.domElement.style.color = CONFIG.isDarkMode ? '#ffffffff' : '#000000ff';
+    asciiEffect.domElement.style.backgroundColor = 'transparent';
+    
+    // Replace canvas with ASCII effect's DOM element
+    skillsCanvas.parentNode.replaceChild(asciiEffect.domElement, skillsCanvas);
+    asciiEffect.domElement.id = 'skills-canvas';
+
+    // Create cube geometry (or use IcosahedronGeometry for sphere)
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    // For sphere: const geometry = new THREE.IcosahedronGeometry(4, 1);
+    
+    // Load texture
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load('/assets/images/image.png');
+    
+    // Create custom shader material for contrast adjustment
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            map: { value: texture },
+            contrast: { value: 1.5 } // Increase for more contrast (1.0 = normal, 2.0 = very high)
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform sampler2D map;
+            uniform float contrast;
+            varying vec2 vUv;
+            
+            void main() {
+                vec4 texColor = texture2D(map, vUv);
+                // Apply contrast adjustment
+                texColor.rgb = (texColor.rgb - 0.5) * contrast + 0.5;
+                // Darken white areas - reduce brightness of light pixels
+                texColor.rgb *= 0.6; // Makes white more gray (0.6 = 60% brightness)
+                gl_FragColor = texColor;
+            }
+        `,
+        transparent: true
     });
 
     // Create mesh
-    skillsSphere = new THREE.Mesh(geometry, material);
-    skillsScene.add(skillsSphere);
+    skillsCube = new THREE.Mesh(geometry, material);
+    skillsCube.rotation.x = Math.PI / 4;
+    skillsCube.rotation.y = Math.PI / 4;
+    skillsScene.add(skillsCube);
 
-    // Add lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    skillsScene.add(ambientLight);
+    // No lighting needed for MeshBasicMaterial (it's unlit)
+    
+    // const pointLight = new THREE.PointLight(0xffffff, 1.5);
+    // pointLight.position.set(2, 2, 2);
+    // skillsScene.add(pointLight);
 
-    const pointLight = new THREE.PointLight(0x4f46e5, 1);
-    pointLight.position.set(2, 2, 2);
-    skillsScene.add(pointLight);
-
-    // Position camera
-    skillsCamera.position.z = 2.5;
+    // Position camera (moved back to accommodate larger mesh)
+    skillsCamera.position.z = 10;
 
     // Scroll-based animation
-    ScrollTrigger.create({
-        trigger: '.skills',
-        start: 'top bottom',
-        end: 'bottom top',
-        onUpdate: (self) => {
-            // Rotate sphere based on scroll position
-            skillsSphere.rotation.y = self.progress * Math.PI * 2;
-        }
-    });
+    // ScrollTrigger.create({
+    //     trigger: '.skills',
+    //     start: 'top bottom',
+    //     end: 'bottom top',
+    //     onUpdate: (self) => {
+    //         // Rotate mesh based on scroll position
+    //         skillsSphere.rotation.y = self.progress * Math.PI * 2;
+    //     }
+    // });
 
     // Animation
+    let cameraAngle = 0;
+    const cameraDistance = 10;
+    
     const animateSkills = () => {
         requestAnimationFrame(animateSkills);
 
-        // Continuous slight rotation
-        skillsSphere.rotation.x += 0.002;
+        // Rotate camera around the cube
+        cameraAngle += 0.002;
+        skillsCamera.position.x = Math.cos(cameraAngle) * cameraDistance;
+        skillsCamera.position.z = Math.sin(cameraAngle) * cameraDistance;
+        skillsCamera.lookAt(skillsCube.position);
 
-        // Render
-        skillsRenderer.render(skillsScene, skillsCamera);
+        // Render with ASCII effect
+        asciiEffect.render(skillsScene, skillsCamera);
     };
 
     animateSkills();
@@ -886,8 +939,9 @@ function initSkillsScene() {
         skillsCamera.aspect = width / height;
         skillsCamera.updateProjectionMatrix();
 
-        // Update renderer
+        // Update renderer and ASCII effect
         skillsRenderer.setSize(width, height);
+        asciiEffect.setSize(width, height);
     };
 
     window.addEventListener('resize', handleResize);
