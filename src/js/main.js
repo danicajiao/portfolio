@@ -998,8 +998,8 @@ function initAnimations() {
     gsap.set('.skills-category', { y: 30, opacity: 0 });
 
     // Contact section elements
-    gsap.set('.contact-info', { x: -50, opacity: 0 });
-    gsap.set('.contact-form', { x: 50, opacity: 0 });
+    gsap.set('.contact-info', { y: 30, opacity: 0 });
+    gsap.set('.contact-form', { y: 30, opacity: 0 });
 }
 
 // Loading sequence
@@ -1194,7 +1194,7 @@ function startPageAnimations() {
 
     gsap.to('.contact-info', {
         scrollTrigger: contactTrigger,
-        x: 0,
+        y: 0,
         opacity: 1,
         duration: 1,
         ease: 'power3.out'
@@ -1202,7 +1202,7 @@ function startPageAnimations() {
 
     gsap.to('.contact-form', {
         scrollTrigger: contactTrigger,
-        x: 0,
+        y: 0,
         opacity: 1,
         duration: 1,
         delay: 0.3,

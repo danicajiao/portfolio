@@ -517,17 +517,16 @@ section {
 .panel-left {
     grid-column: 1;
     pointer-events: none;
-    /* border: 2px solid blue; */
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: 2px solid peachpuff; */
+    border: 2px solid orange;
 }
 
 .panel-right {
     grid-column: 3;
     pointer-events: none;
-    /* border: 2px solid orange; */
+    border: 2px solid orange;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -730,9 +729,9 @@ section {
 
 .skills-visual {
     position: relative;
-    height: 600px;
-    width: 600px;
-    /* border: 2px solid red; */
+    /* height: 600px;
+    width: 600px; */
+    border: 2px solid red;
 }
 
 #skills-canvas {
@@ -776,6 +775,9 @@ section {
 }
 
 /* Contact Section */
+
+
+
 .contact-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
