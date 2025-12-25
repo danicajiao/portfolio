@@ -68,6 +68,9 @@ function init() {
     // Initialize project hover effects with GSAP
     initProjectHovers();
 
+    // Initialize project modal
+    initProjectModal();
+
     initSkillsScene();
 
     // Initialize interactive elements
@@ -815,6 +818,129 @@ function initProjectHovers() {
     });
 }
 
+// Initialize project modal
+function initProjectModal() {
+    const modal = document.getElementById('project-modal');
+    const modalOverlay = modal.querySelector('.modal-overlay');
+    const modalContent = modal.querySelector('.modal-content');
+    const modalBody = document.getElementById('modal-body');
+    const closeBtn = modal.querySelector('.modal-close');
+    const projectLinks = document.querySelectorAll('.project-link');
+    
+    // Project content mapping
+    const projectContent = {
+        'schwab': {
+            title: 'Schwab CI/CD',
+            description: 'Enterprise CI/CD platform serving developers across Charles Schwab with automated pipelines for diverse deployment targets. Recognized with the Schwab Technology Services All-Star 2025 award for delivering production-grade deployment pipelines to on-premise infrastructure with enterprise-standard environment strategies, security scanning, and compliance automation. The platform provides comprehensive CI capabilities, artifact management, secure secret fetching, and unified developer experience across the organization\'s technology stack.',
+            tech: ['GitHub Actions', 'GCP', 'Cloud Foundry', 'Kubernetes', 'Bash', 'JavaScript', 'Python'],
+            link: 'https://www.linkedin.com/in/daniel-cajiao-67184996'
+        },
+        'cove': {
+            title: 'Cove - Mock Curated Marketplace',
+            description: 'Passion project of a mock curated marketplace of ethical businesses and quality producers to explore native iOS Development, UX/UI design, mobile CI/CD, and the Google Cloud Platform.',
+            tech: ['iOS', 'SwiftUI', 'GCP', 'Firebase'],
+            link: 'https://github.com/danicajiao/cove-ios'
+        },
+        'schwapp': {
+            title: 'SchwApp',
+            description: 'Award-winning project from Schwab\'s 2024 NERDathon. A comprehensive internal mobile platform designed to strengthen employee engagement and foster workplace community. Features include personalized news feeds, company-wide event discovery, real-time collaboration tools, resource directories, and employee recognition systems—creating a unified digital hub that connects thousands of employees across the organization.',
+            tech: ['React Native', 'TypeScript', 'REST API'],
+            link: 'https://www.linkedin.com/in/daniel-cajiao-67184996'
+        },
+        'safelinc': {
+            title: 'SafeLINC',
+            description: 'Mental health safety plan application that empowers individuals to create, access, and modify their personalized safety plans anytime, anywhere. Features include real-time plan updates, encouraging feedback, secure sharing with parents or therapists, and quick access to crisis services—providing a comfortable, supportive way for users to manage their mental wellness.',
+            tech: ['iOS', 'AWS', 'GraphQL'],
+            link: 'https://www.linkedin.com/in/daniel-cajiao-67184996'
+        },
+        'letics': {
+            title: 'Letics',
+            description: 'Athletic performance tracking and analysis platform. Track workouts, analyze performance metrics, and connect with coaches and teammates.',
+            tech: ['React Native', 'MongoDB'],
+            link: 'https://www.linkedin.com/in/daniel-cajiao-67184996'
+        }
+    };
+    
+    // Open modal function
+    function openModal(projectId) {
+        const content = projectContent[projectId];
+        if (!content) return;
+        
+        // Generate modal content
+        modalBody.innerHTML = `
+            <h2>${content.title}</h2>
+            <p>${content.description}</p>
+            <div class="tech-stack">
+                ${content.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+            </div>
+            ${content.link ? `<p style="margin-top: 2rem;"><a href="${content.link}" target="_blank" rel="noopener noreferrer" style="color: var(--color-accent); text-decoration: underline;">View Project →</a></p>` : ''}
+        `;
+        
+        // Enable pointer events and animate in
+        gsap.set(modal, { pointerEvents: 'auto' });
+        gsap.set(modalContent, { scale: 0.8, opacity: 0 });
+        
+        const tl = gsap.timeline();
+        tl.to(modal, { 
+            opacity: 1, 
+            duration: 0.3, 
+            ease: CONFIG.animations.defaults.ease 
+        })
+        .to(modalContent, { 
+            scale: 1, 
+            opacity: 1, 
+            duration: 0.4, 
+            ease: 'back.out(1.2)' 
+        }, '-=0.2');
+        
+        // Disable scroll
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Close modal function
+    function closeModal() {
+        const tl = gsap.timeline({
+            onComplete: () => {
+                gsap.set(modal, { pointerEvents: 'none' });
+                document.body.style.overflow = '';
+            }
+        });
+        
+        tl.to(modalContent, { 
+            scale: 0.8, 
+            opacity: 0, 
+            duration: 0.3, 
+            ease: CONFIG.animations.defaults.ease 
+        })
+        .to(modal, { 
+            opacity: 0, 
+            duration: 0.2 
+        }, '-=0.1');
+    }
+    
+    // Event listeners for project links
+    projectLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const projectId = link.id.replace('-link', '');
+            openModal(projectId);
+        });
+    });
+    
+    // Close button
+    closeBtn.addEventListener('click', closeModal);
+    
+    // Click overlay to close
+    modalOverlay.addEventListener('click', closeModal);
+    
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.pointerEvents === 'auto') {
+            closeModal();
+        }
+    });
+}
+
 // Skills scene with Three.js ASCII effect
 function initSkillsScene() {
     const skillsCanvas = document.getElementById('skills-canvas');
@@ -823,7 +949,7 @@ function initSkillsScene() {
 
     // Scene, camera and renderer
     const skillsScene = new THREE.Scene();
-    const skillsCamera = new THREE.PerspectiveCamera(10, skillsCanvas.clientWidth / skillsCanvas.clientHeight, 0.1, 1000);
+    const skillsCamera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000); // Fixed 1:1 aspect ratio, wider FOV
     const skillsRenderer = new THREE.WebGLRenderer({ 
         canvas: skillsCanvas,
         antialias: true,
@@ -839,7 +965,7 @@ function initSkillsScene() {
         invert: false, // White areas -> #, Black areas -> . (space)
         resolution: 0.17 // Higher resolution = smaller ASCII characters (try 0.2-0.3)
     });
-    asciiEffect.setSize(skillsCanvas.clientWidth, skillsCanvas.clientHeight);
+    asciiEffect.setSize(skillsCanvas.clientWidth, skillsCanvas.clientWidth); // Square dimensions
     asciiEffect.domElement.style.color = CONFIG.isDarkMode ? '#ffffffff' : '#000000ff';
     asciiEffect.domElement.style.backgroundColor = 'transparent';
     
@@ -848,7 +974,7 @@ function initSkillsScene() {
     asciiEffect.domElement.id = 'skills-canvas';
 
     // Create cube geometry (or use IcosahedronGeometry for sphere)
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
     // For sphere: const geometry = new THREE.IcosahedronGeometry(4, 1);
     
     // Load texture
@@ -891,29 +1017,12 @@ function initSkillsScene() {
     skillsCube.rotation.y = Math.PI / 4;
     skillsScene.add(skillsCube);
 
-    // No lighting needed for MeshBasicMaterial (it's unlit)
-    
-    // const pointLight = new THREE.PointLight(0xffffff, 1.5);
-    // pointLight.position.set(2, 2, 2);
-    // skillsScene.add(pointLight);
-
     // Position camera (moved back to accommodate larger mesh)
-    skillsCamera.position.z = 10;
-
-    // Scroll-based animation
-    // ScrollTrigger.create({
-    //     trigger: '.skills',
-    //     start: 'top bottom',
-    //     end: 'bottom top',
-    //     onUpdate: (self) => {
-    //         // Rotate mesh based on scroll position
-    //         skillsSphere.rotation.y = self.progress * Math.PI * 2;
-    //     }
-    // });
+    skillsCamera.position.z = 4.5;
 
     // Animation
     let cameraAngle = 0;
-    const cameraDistance = 10;
+    const cameraDistance = 4;
     
     const animateSkills = () => {
         requestAnimationFrame(animateSkills);
@@ -940,19 +1049,18 @@ function initSkillsScene() {
 
     // Handle resize
     const handleResize = () => {
-        const width = asciiEffect.domElement.clientWidth;
-        const height = asciiEffect.domElement.clientHeight;
+        const size = Math.min(asciiEffect.domElement.clientWidth, asciiEffect.domElement.clientHeight);
 
         // Only update if dimensions are valid
-        if (width === 0 || height === 0) return;
+        if (size === 0) return;
 
-        // Update camera
-        skillsCamera.aspect = width / height;
+        // Keep it square
+        skillsCamera.aspect = 1;
         skillsCamera.updateProjectionMatrix();
 
-        // Update renderer and ASCII effect
-        skillsRenderer.setSize(width, height);
-        asciiEffect.setSize(width, height);
+        // Update renderer and ASCII effect with square dimensions
+        skillsRenderer.setSize(size, size);
+        asciiEffect.setSize(size, size);
     };
 
     window.addEventListener('resize', handleResize);
