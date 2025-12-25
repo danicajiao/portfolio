@@ -853,7 +853,7 @@ function initSkillsScene() {
     
     // Load texture
     const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load('/assets/images/image.png');
+    const texture = textureLoader.load('/assets/images/GitHub.png');
     
     // Create custom shader material for contrast adjustment
     const material = new THREE.ShaderMaterial({
@@ -918,6 +918,14 @@ function initSkillsScene() {
     const animateSkills = () => {
         requestAnimationFrame(animateSkills);
 
+        // Check if canvas has valid dimensions before rendering
+        const width = asciiEffect.domElement.clientWidth;
+        const height = asciiEffect.domElement.clientHeight;
+        
+        if (width === 0 || height === 0) {
+            return; // Skip rendering if canvas has zero dimensions
+        }
+
         // Rotate camera around the cube
         cameraAngle += 0.002;
         skillsCamera.position.x = Math.cos(cameraAngle) * cameraDistance;
@@ -932,8 +940,11 @@ function initSkillsScene() {
 
     // Handle resize
     const handleResize = () => {
-        const width = skillsCanvas.clientWidth;
-        const height = skillsCanvas.clientHeight;
+        const width = asciiEffect.domElement.clientWidth;
+        const height = asciiEffect.domElement.clientHeight;
+
+        // Only update if dimensions are valid
+        if (width === 0 || height === 0) return;
 
         // Update camera
         skillsCamera.aspect = width / height;

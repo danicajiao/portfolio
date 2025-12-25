@@ -1,4 +1,8 @@
 import { gsap } from 'gsap';
+// import { CustomEase } from 'gsap/CustomEase';
+
+// gsap.registerPlugin(CustomEase);
+
 
 // ============================================================================
 // HELPER UTILITIES
@@ -79,7 +83,7 @@ const getSchwabSpecificElements = () => {
  * @returns {Object} Object containing Cove animation element references
  */
 const getCoveSpecificElements = () => {
-    const spinner = document.getElementById('cove-geo-1');
+    const spinner = document.getElementById('cove-geo-2');
 
     if (!spinner) {
         console.warn('[getCoveSpecificElements] Missing spinner element');
@@ -251,7 +255,7 @@ const coveAnimations = {
             {
                 rotate: 90,
                 delay: 1,
-                ease: 'elastic.inOut',
+                ease: 'expo.inOut',
                 duration: 2,
                 repeat: -1,
                 repeatDelay: 1,
@@ -273,6 +277,19 @@ const coveAnimations = {
         // gsap.set(bg, { opacity: 0 });
     }
 };
+
+function blendEases(startEase, endEase, blender) {
+  var parse = function (ease) {
+      return typeof ease === "function" ? ease : gsap.parseEase("power4.inOut");
+    },
+    s = gsap.parseEase(startEase),
+    e = gsap.parseEase(endEase),
+    blender = parse(blender);
+  return function (v) {
+    var b = blender(v);
+    return s(v) * (1 - b) + e(v) * b;
+  };
+}
 
 /**
  * Schwapp project animations
