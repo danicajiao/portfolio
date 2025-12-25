@@ -308,6 +308,10 @@ const schwappAnimations = {
             opacity: 1
         });
     },
+
+    leave: (projectId, config) => {
+        // TODO: Add leave logic when needed
+    }
 }
 
 // ============================================================================
