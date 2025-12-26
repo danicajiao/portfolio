@@ -43,3 +43,6 @@ coverage
 .temp
 .tmp
 .cache
+
+# Copilot files
+copilot-instructions.md
