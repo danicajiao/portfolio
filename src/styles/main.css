@@ -653,6 +653,7 @@ section {
 /* About Section */
 .about {
     padding: 0 0 var(--spacing-xl) 0;
+    scroll-margin-top: var(--spacing-xl);
 }
 
 .about-content {
@@ -698,6 +699,7 @@ section {
     background-color: var(--color-bg-secondary);
     position: relative;
     overflow: hidden;
+    scroll-margin-top: var(--spacing-lg);
 }
 
 .skills-content {
@@ -765,8 +767,10 @@ section {
 }
 
 /* Contact Section */
-
-
+.contact {
+    padding: var(--spacing-md) 0;
+    scroll-margin-top: var(--spacing-lg);
+}
 
 .contact-content {
     display: grid;
@@ -913,6 +917,7 @@ section {
     .work {
         height: auto;
         padding: var(--spacing-xl) 0 0 0;
+        scroll-margin-top: var(--spacing-lg);
     }
 
     .project-visuals {
