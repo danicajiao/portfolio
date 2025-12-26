@@ -7,6 +7,7 @@ import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import Lenis from 'lenis';
 import { animateProject } from './project-link-animations';
+import githubTexture from '../assets/images/GitHub.png';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
@@ -977,9 +978,9 @@ function initSkillsScene() {
     const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
     // For sphere: const geometry = new THREE.IcosahedronGeometry(4, 1);
     
-    // Load texture
+    // Load texture (imported at top of file for Vite compatibility)
     const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load('/assets/images/GitHub.png');
+    const texture = textureLoader.load(githubTexture);
     
     // Create custom shader material for contrast adjustment
     const material = new THREE.ShaderMaterial({
