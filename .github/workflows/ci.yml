@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-and-release:
+    name: Build and Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -79,7 +80,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.package-version.outputs.tag }}
-          name: Release ${{ steps.package-version.outputs.tag }}
+          name: ${{ steps.package-version.outputs.tag }}
           body: |
             ## Release ${{ steps.package-version.outputs.tag }}
             
