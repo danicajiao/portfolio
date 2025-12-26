@@ -1,0 +1,62 @@
+name: PR - Version Check
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  version-check:
+    name: Check Version Availability
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Extract version from package.json
+        id: package-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "Found version: $VERSION"
+
+      - name: Check if tag exists
+        id: check-tag
+        run: |
+          # Fetch all tags
+          git fetch --tags
+          
+          if git rev-parse "v${{ steps.package-version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "❌ Tag v${{ steps.package-version.outputs.version }} already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✅ Tag v${{ steps.package-version.outputs.version }} is available"
+          fi
+
+      - name: Fail if version already released
+        if: steps.check-tag.outputs.exists == 'true'
+        run: |
+          echo "::error::Version ${{ steps.package-version.outputs.version }} has already been released!"
+          echo "::error::Please update the version in package.json before merging this PR."
+          echo ""
+          echo "To update the version, run one of:"
+          echo "  npm version patch  (for bug fixes: ${{ steps.package-version.outputs.version }} -> x.x.$(node -p "require('./package.json').version.split('.')[2] * 1 + 1"))"
+          echo "  npm version minor  (for new features)"
+          echo "  npm version major  (for breaking changes)"
+          exit 1
+
+      - name: Version check passed
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          echo "✅ Version check passed!"
+          echo "Version ${{ steps.package-version.outputs.version }} is available for release."
