@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
+import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
 import { animateProject } from './project-link-animations';
 import githubTexture from '../assets/images/GitHub.png';
@@ -12,6 +13,7 @@ import githubTexture from '../assets/images/GitHub.png';
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 gsap.registerPlugin(MotionPathPlugin);
+gsap.registerPlugin(SplitText);
 
 
 // Set defaults for ScrollTrigger
@@ -26,6 +28,7 @@ let heroMesh, skillsCube;
 let particles;
 const loader = new THREE.TextureLoader();
 let projectHovered = false;
+// let asciiEffectElement = null; // Reference to ASCII effect DOM element for theme changes
 
 // Load initial theme colors immediately when script loads
 let CONFIG = {
@@ -94,8 +97,10 @@ function loadCSSColors() {
     return {
         bgPrimary: computedStyle.getPropertyValue('--color-bg-primary').trim(),
         bgSecondary: computedStyle.getPropertyValue('--color-bg-secondary').trim(),
+        bgInverted: computedStyle.getPropertyValue('--color-bg-inverted').trim(),
         textPrimary: computedStyle.getPropertyValue('--color-text-primary').trim(),
         textSecondary: computedStyle.getPropertyValue('--color-text-secondary').trim(),
+        textInverted: computedStyle.getPropertyValue('--color-text-inverted').trim(),
         border: computedStyle.getPropertyValue('--color-border').trim(),
         accent: computedStyle.getPropertyValue('--color-accent').trim(),
         accentHover: computedStyle.getPropertyValue('--color-accent-hover').trim(),
@@ -189,6 +194,14 @@ function initThemeListener() {
             const squares = schwabBg.querySelectorAll('.grid-square');
             gsap.set(squares, { stroke: 'rgba(0, 0, 0, 1)' });
 
+            // ASCII effect color
+            // if (asciiEffectElement) {
+            //     gsap.to(asciiEffectElement, {
+            //         color: '#000000ff',
+            //         duration: CONFIG.animations.defaults.duration,
+            //         ease: CONFIG.animations.defaults.ease
+            //     });
+            // }
 
 
         } else {
@@ -239,6 +252,15 @@ function initThemeListener() {
             // Schwab Background
             const squares = schwabBg.querySelectorAll('.grid-square');
             gsap.set(squares, { stroke: 'rgba(255, 255, 255, 1)' });
+            
+            // // ASCII effect color
+            // if (asciiEffectElement) {
+            //     gsap.to(asciiEffectElement, {
+            //         color: '#ffffffff',
+            //         duration: CONFIG.animations.defaults.duration,
+            //         ease: CONFIG.animations.defaults.ease
+            //     });
+            // }
         }
     });
 }
@@ -308,6 +330,8 @@ function initCursor() {
 function initNavigation() {
     // Navigation background change on scroll
     const nav = document.querySelector('.nav');
+    const navLinks = gsap.utils.toArray('.nav-link');
+    const logo = document.querySelector('.logo a');
 
     // Set initial state for nav
     if (window.scrollY > 100) {
@@ -346,8 +370,43 @@ function initNavigation() {
         }
     });
 
+    // Change navbar color when over skills section
+    ScrollTrigger.create({
+        trigger: '#skills',
+        start: 'top top+=50',
+        end: 'bottom top+=50',
+        onEnter: () => {
+            gsap.to([...navLinks, logo], {
+                color: CONFIG.isDarkMode ? CONFIG.colors.textPrimary : CONFIG.colors.textInverted,
+                duration: 0.3,
+                ease: CONFIG.animations.defaults.ease
+            });
+        },
+        onLeave: () => {
+            gsap.to([...navLinks, logo], {
+                color: CONFIG.colors.textPrimary,
+                duration: 0.3,
+                ease: CONFIG.animations.defaults.ease
+            });
+        },
+        onEnterBack: () => {
+            gsap.to([...navLinks, logo], {
+                color: CONFIG.isDarkMode ? CONFIG.colors.textPrimary : CONFIG.colors.textInverted,
+                duration: 0.3,
+                ease: CONFIG.animations.defaults.ease
+            });
+        },
+        onLeaveBack: () => {
+            gsap.to([...navLinks, logo], {
+                color: CONFIG.colors.textPrimary,
+                duration: 0.3,
+                ease: CONFIG.animations.defaults.ease
+            });
+        }
+    });
+
     const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    // const navLinks = document.querySelector('.nav-links');
 
     menuToggle.addEventListener('click', () => {
         const isActive = menuToggle.classList.contains('active');
@@ -398,7 +457,7 @@ function initNavigation() {
     });
 
     // Add hover effect for logo
-    const logo = document.querySelector('.logo a');
+    // const logo = document.querySelector('.logo a');
 
     logo.addEventListener('mouseenter', () => {
         gsap.to(logo, {
@@ -648,6 +707,11 @@ function animateGridSquares() {
 
 // Add this to your init function or create a new function called from init
 function initProjectHovers() {
+    // Don't initialize hover effects on tablets and smaller screens
+    if (window.innerWidth <= 1100) {
+        return;
+    }
+
     const projectLinks = document.querySelectorAll('.project-link');
     const visuals = document.querySelector('.project-visuals');
     // const nav = document.querySelector('.nav');
@@ -698,7 +762,7 @@ function initProjectHovers() {
             // Kill any ongoing animations on global/shared elements
             gsap.killTweensOf(visuals);
             gsap.killTweensOf(heroCanvas);
-            gsap.killTweensOf('.nav');
+            // gsap.killTweensOf('.nav');
 
             document.querySelectorAll('.panel').forEach(panel => {
                 gsap.killTweensOf(panel);
@@ -712,11 +776,11 @@ function initProjectHovers() {
             activeProjectId = projectId;
 
             // Hide nav
-            gsap.to('.nav', {
-                opacity: 0,
-                duration: 0.6,
-                ease: 'power2.out'
-            });
+            // gsap.to('.nav', {
+            //     opacity: 0,
+            //     duration: 0.6,
+            //     ease: 'power2.out'
+            // });
 
             // Hide all backgrounds
             document.querySelectorAll('.project-bg').forEach(projectBg => {
@@ -797,11 +861,11 @@ function initProjectHovers() {
             if (event.target.classList.contains('project-link') !== event.relatedTarget?.classList.contains('project-link')) {
                 // Reset state
                 // gsap.set('body', { backgroundColor: CONFIG.colors.bgPrimary });
-                gsap.to('.nav', {
-                    opacity: 1,
-                    duration: 0.6,
-                    ease: 'power2.out'
-                });
+                // gsap.to('.nav', {
+                //     opacity: 1,
+                //     duration: 0.6,
+                //     ease: 'power2.out'
+                // });
                 gsap.set(visuals, { opacity: 0 });
                 gsap.set(heroCanvas, { opacity: 1 });
             }
@@ -833,11 +897,11 @@ function initProjectModal() {
         'schwab': {
             title: 'Schwab CI/CD',
             description: 'Enterprise CI/CD platform serving developers across Charles Schwab with automated pipelines for diverse deployment targets. Recognized with the Schwab Technology Services All-Star 2025 award for delivering production-grade deployment pipelines to on-premise infrastructure with enterprise-standard environment strategies, security scanning, and compliance automation. The platform provides comprehensive CI capabilities, artifact management, secure secret fetching, and unified developer experience across the organization\'s technology stack.',
-            tech: ['GitHub Actions', 'GCP', 'Cloud Foundry', 'Kubernetes', 'Bash', 'JavaScript', 'Python'],
+            tech: ['GitHub Actions', 'Docker', 'GCP', 'Cloud Foundry', 'Kubernetes', 'Bash', 'JavaScript', 'Python'],
             link: 'https://www.linkedin.com/in/daniel-cajiao-67184996'
         },
         'cove': {
-            title: 'Cove - Mock Curated Marketplace',
+            title: 'Cove',
             description: 'Passion project of a mock curated marketplace of ethical businesses and quality producers to explore native iOS Development, UX/UI design, mobile CI/CD, and the Google Cloud Platform.',
             tech: ['iOS', 'SwiftUI', 'GCP', 'Firebase'],
             link: 'https://github.com/danicajiao/cove-ios'
@@ -950,7 +1014,7 @@ function initSkillsScene() {
 
     // Scene, camera and renderer
     const skillsScene = new THREE.Scene();
-    const skillsCamera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000); // Fixed 1:1 aspect ratio, wider FOV
+    const skillsCamera = new THREE.PerspectiveCamera(10, 1, 0.1, 1000); // Fixed 1:1 aspect ratio, tighter FOV
     const skillsRenderer = new THREE.WebGLRenderer({ 
         canvas: skillsCanvas,
         antialias: true,
@@ -967,12 +1031,15 @@ function initSkillsScene() {
         resolution: 0.17 // Higher resolution = smaller ASCII characters (try 0.2-0.3)
     });
     asciiEffect.setSize(skillsCanvas.clientWidth, skillsCanvas.clientWidth); // Square dimensions
-    asciiEffect.domElement.style.color = CONFIG.isDarkMode ? '#ffffffff' : '#000000ff';
+    asciiEffect.domElement.style.color = '#ffffffff';
     asciiEffect.domElement.style.backgroundColor = 'transparent';
     
     // Replace canvas with ASCII effect's DOM element
     skillsCanvas.parentNode.replaceChild(asciiEffect.domElement, skillsCanvas);
     asciiEffect.domElement.id = 'skills-canvas';
+    
+    // Store reference for theme changes
+    // asciiEffectElement = asciiEffect.domElement;
 
     // Create cube geometry (or use IcosahedronGeometry for sphere)
     const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
@@ -1014,16 +1081,16 @@ function initSkillsScene() {
 
     // Create mesh
     skillsCube = new THREE.Mesh(geometry, material);
-    skillsCube.rotation.x = Math.PI / 4;
-    skillsCube.rotation.y = Math.PI / 4;
+    skillsCube.rotation.x = -Math.PI / 6; // 45°
+    skillsCube.rotation.y = -Math.PI / 6; // 45°
     skillsScene.add(skillsCube);
 
     // Position camera (moved back to accommodate larger mesh)
-    skillsCamera.position.z = 4.5;
+    skillsCamera.position.z = 15;
 
     // Animation
     let cameraAngle = 0;
-    const cameraDistance = 4;
+    const cameraDistance = 15;
     
     const animateSkills = () => {
         requestAnimationFrame(animateSkills);
@@ -1065,19 +1132,107 @@ function initSkillsScene() {
     };
 
     window.addEventListener('resize', handleResize);
+    
+    // Call handleResize after a frame to ensure DOM layout is complete
+    requestAnimationFrame(() => handleResize());
 }
 
 // Contact form handling
 function initForm() {
     const form = document.getElementById('contact-form');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+    const btnText = submitBtn?.querySelector('.btn-text');
+    const btnLoading = submitBtn?.querySelector('.btn-loading');
+    const messageDiv = document.getElementById('form-message');
+    
+    // Replace with your Google Apps Script web app URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby9a5QcOEHypUP94--YKSuNpppWbBWBvQ7FL6p7ZQmGqVylY-IP4jvV-p6SayEN5Muugg/exec';
 
     if (form) {
-        form.addEventListener('submit', function (e) {
+        form.addEventListener('submit', async function (e) {
             e.preventDefault();
-            // Here you would typically handle the form submission
-            // This is a placeholder for actual form handling
-            alert('Form submitted! In a real application, this would send your message.');
+            
+            // Get form data
+            const formData = {
+                name: form.name.value.trim(),
+                email: form.email.value.trim(),
+                message: form.message.value.trim(),
+                timestamp: new Date().toISOString()
+            };
+            
+            // Validate
+            if (!formData.name || !formData.email || !formData.message) {
+                showFormMessage('Please fill in all fields.', 'error');
+                return;
+            }
+            
+            // Show loading state
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                if (btnText) btnText.style.display = 'none';
+                if (btnLoading) btnLoading.style.display = 'inline';
+            }
+            
+            try {
+                // Send to Google Sheets
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Google Apps Script requires this
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                // Note: With no-cors mode, we can't read the response
+                // Assume success if no error is thrown
+                showFormMessage('Thanks! Your message has been sent successfully.', 'success');
+                form.reset();
+                
+            } catch (error) {
+                console.error('Form submission error:', error);
+                showFormMessage('Oops! Something went wrong. Please try again or email me directly.', 'error');
+            } finally {
+                // Reset button state
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    if (btnText) btnText.style.display = 'inline';
+                    if (btnLoading) btnLoading.style.display = 'none';
+                }
+            }
         });
+    }
+    
+    function showFormMessage(message, type) {
+        if (!messageDiv) return;
+        
+        messageDiv.textContent = message;
+        messageDiv.className = `form-message form-message-${type}`;
+        
+        // Animate message in
+        gsap.fromTo(messageDiv,
+            { opacity: 0, y: -10 },
+            { 
+                opacity: 1, 
+                y: 0, 
+                duration: 0.3, 
+                ease: 'power2.out'
+            }
+        );
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            gsap.to(messageDiv, {
+                opacity: 0,
+                y: -10,
+                duration: 0.3,
+                ease: 'power2.in',
+                onComplete: () => {
+                    messageDiv.textContent = '';
+                    messageDiv.className = 'form-message';
+                }
+            });
+        }, 5000);
     }
 }
 
@@ -1110,7 +1265,7 @@ function initAnimations() {
     });
 
     // About section elements
-    gsap.set('.about-image-wrapper', { scale: 0.8, opacity: 0 });
+    // gsap.set('.about-image-wrapper', { scale: 0.8, opacity: 0 });
     gsap.set('.about-text p', { y: 30, opacity: 0 });
     gsap.set('.about-cta', { y: 30, opacity: 0 });
 
@@ -1267,13 +1422,13 @@ function startPageAnimations() {
         start: 'top 70%'
     };
 
-    gsap.to('.about-image-wrapper', {
-        scrollTrigger: aboutTrigger,
-        scale: 1,
-        opacity: 1,
-        duration: 1.2,
-        ease: 'back.out(1.5)'
-    });
+    // gsap.to('.about-image-wrapper', {
+    //     scrollTrigger: aboutTrigger,
+    //     scale: 1,
+    //     opacity: 1,
+    //     duration: 1.2,
+    //     ease: 'back.out(1.5)'
+    // });
 
     gsap.to('.about-text p', {
         scrollTrigger: aboutTrigger,
@@ -1284,13 +1439,24 @@ function startPageAnimations() {
         ease: 'power3.out'
     });
 
-    gsap.to('.about-cta', {
+    // split elements with the class "split" into words and characters
+    let split = SplitText.create(".about-text p", { type: "words, chars" });
+
+    // now animate the characters in a staggered fashion
+    gsap.from(split.words, {
         scrollTrigger: aboutTrigger,
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        delay: 0.6,
-        ease: 'power3.out'
+        duration: 1, 
+        // y: 100,       // animate from 100px below
+        autoAlpha: 0, // fade in from opacity: 0 and visibility: hidden
+        stagger: 0.03, // 0.03 seconds between each
+        onComplete: () => {
+            gsap.to('.about-cta', {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out'
+            });
+        }
     });
 
     // Skills section animations

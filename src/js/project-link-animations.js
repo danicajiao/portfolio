@@ -108,7 +108,7 @@ const schwabAnimations = {
 
         if (!bg) return;
 
-        gsap.to(bg, {
+        gsap.set(bg, {
             opacity: 1
         });
 
@@ -240,7 +240,7 @@ const coveAnimations = {
 
         if (!bg) return;
 
-        gsap.to(bg, {
+        gsap.set(bg, {
             opacity: 1
         });
 
@@ -300,7 +300,7 @@ const schwappAnimations = {
 
         if (!bg) return;
 
-        gsap.to(bg, {
+        gsap.set(bg, {
             opacity: 1
         });
 

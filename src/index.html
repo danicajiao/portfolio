@@ -29,7 +29,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="description" content="Personal portfolio showcasing software engineering projects and skills">
 </head>
 
 <body>
@@ -379,25 +378,20 @@
     <section id="about" class="about">
         <div class="container">
             <div class="about-content">
-                <div class="about-image">
-                    <div class="about-image-wrapper">
-                        <img src="./assets/images/profile-placeholder.jpg" alt="Your Name">
-                    </div>
-                </div>
                 <div class="about-text">
                     <h2 class="section-title">About Me</h2>
                     <p>
-                        Hello, I'm Daniel Cajiao. A software engineer passionate about building elegant solutions to
-                        complex problems. With a background in Enterprise CI/CD and Mobile Development, I focus on
+                        A results driver software engineer from Fort Lauderdale, Florida, now living in Colorado,
+                        who's passionate about building elegant solutions to complex problems. With a background in Enterprise CI/CD and Mobile Development, focused on
                         creating intuitive and efficient applications that solve real-world challenges.
                     </p>
                     <p>
-                        When I'm not coding, I enjoy music and gaming. I believe that diverse experiences fuel
+                        Outside of coding, my interests include music and gaming. I believe diverse experiences fuel
                         creativity and innovation in tech.
                     </p>
                     <p>
-                        I'm currently working as a Software Engineer at Charles Schwab. Feel free to reach out if
-                        you'd like to collaborate or just chat about technology and innovation.
+                        Currently working as a Software Engineer at Charles Schwab. Open to collaboration and
+                        conversations about technology and innovation.
                     </p>
                     <div class="about-cta">
                         <a href="#contact" class="btn btn-primary">Get in Touch</a>
@@ -418,19 +412,16 @@
                         <h3>Languages</h3>
                         <ul class="skills-list">
                             <li>JavaScript</li>
-                            <li>TypeScript</li>
                             <li>Python</li>
-                            <li>HTML5/CSS3</li>
-                            <li>SQL</li>
+                            <li>Swift</li>
+                            <li>Bash</li>
                         </ul>
                     </div>
                     <div class="skills-category">
                         <h3>Frameworks & Libraries</h3>
                         <ul class="skills-list">
-                            <li>React</li>
                             <li>Node.js</li>
-                            <li>Next.js</li>
-                            <li>Express</li>
+                            <li>SwiftUI</li>
                             <li>Three.js</li>
                             <li>GSAP</li>
                         </ul>
@@ -438,9 +429,9 @@
                     <div class="skills-category">
                         <h3>Tools & Platforms</h3>
                         <ul class="skills-list">
-                            <li>Git/GitHub</li>
+                            <li>GitHub Actions</li>
                             <li>Docker</li>
-                            <li>AWS</li>
+                            <li>GCP</li>
                             <li>Firebase</li>
                             <li>Figma</li>
                         </ul>
@@ -472,9 +463,8 @@
                         </div>
                     </div>
                     <div class="social-links">
-                        <a href="https://github.com/yourusername" target="_blank" class="social-link">GitHub</a>
-                        <a href="https://linkedin.com/in/yourusername" target="_blank" class="social-link">LinkedIn</a>
-                        <a href="https://twitter.com/yourusername" target="_blank" class="social-link">Twitter</a>
+                        <a href="https://github.com/danicajiao" target="_blank" class="social-link">GitHub</a>
+                        <a href="https://www.linkedin.com/in/daniel-cajiao-67184996" target="_blank" class="social-link">LinkedIn</a>
                     </div>
                 </div>
                 <div class="contact-form">
@@ -491,7 +481,11 @@
                             <label for="message">Message</label>
                             <textarea id="message" name="message" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Send Message</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">Send Message</span>
+                            <span class="btn-loading" style="display: none;">Sending...</span>
+                        </button>
+                        <div id="form-message" class="form-message"></div>
                     </form>
                 </div>
             </div>
