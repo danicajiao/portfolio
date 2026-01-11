@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     root: 'src',
+    publicDir: '../public',
     base: process.env.GITHUB_ACTIONS ? '/portfolio/' : '/',
     server: {
         port: 5173,

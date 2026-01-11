@@ -888,7 +888,7 @@ function initProjectModal() {
     const projectContent = {
         'schwab': {
             title: 'Schwab CI/CD',
-            description: 'Enterprise CI/CD platform serving developers across Charles Schwab with automated pipelines for diverse deployment targets. Recognized with the Schwab Technology Services All-Star 2025 award for delivering production-grade deployment pipelines to on-premise infrastructure with enterprise-standard environment strategies, security scanning, and compliance automation. The platform provides comprehensive CI capabilities, artifact management, secure secret fetching, and unified developer experience across the organization\'s technology stack.',
+            description: 'Enterprise CI/CD platform serving developers across Charles Schwab with automated pipelines for diverse deployment targets. The platform provides comprehensive CI/CD capabilities, artifact management, secure secret fetching, and unified developer experience across the organization\'s technology stack. Recognized with the "Schwab Technology Services All-Star Developer 2025" award for delivering production-grade deployment pipelines with enterprise-standard environment strategies, security scanning, and compliance automation.',
             tech: ['GitHub Actions', 'Docker', 'GCP', 'Cloud Foundry', 'Kubernetes', 'Bash', 'JavaScript', 'Python'],
             link: 'https://www.linkedin.com/in/daniel-cajiao-67184996'
         },
@@ -906,7 +906,7 @@ function initProjectModal() {
         },
         'safelinc': {
             title: 'SafeLINC',
-            description: 'Mental health safety plan application that empowers individuals to create, access, and modify their personalized safety plans anytime, anywhere. Features include real-time plan updates, encouraging feedback, secure sharing with parents or therapists, and quick access to crisis services—providing a comfortable, supportive way for users to manage their mental wellness.',
+            description: 'Mental health safety plan application that empowers individuals to create, access, and modify their personalized safety plans anytime from anywhere. Features include real-time plan updates, encouraging feedback, secure sharing with parents or therapists, and quick access to crisis services—providing a comfortable, supportive way for users to manage their mental wellness. Won "Best in Show" @ UCF CS Senior Design, engaging parents and clinicians in collaborative safety planning for at-risk youth, using a secure platform for monitoring and communication.',
             tech: ['iOS', 'AWS', 'GraphQL'],
             link: 'https://www.linkedin.com/in/daniel-cajiao-67184996'
         },
