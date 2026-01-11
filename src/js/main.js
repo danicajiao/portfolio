@@ -401,7 +401,6 @@ function initNavigation() {
     });
 
     const menuToggle = document.querySelector('.menu-toggle');
-    // const navLinks = document.querySelector('.nav-links');
 
     menuToggle.addEventListener('click', () => {
         const isActive = menuToggle.classList.contains('active');
