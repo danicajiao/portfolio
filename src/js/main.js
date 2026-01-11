@@ -253,14 +253,6 @@ function initThemeListener() {
             const squares = schwabBg.querySelectorAll('.grid-square');
             gsap.set(squares, { stroke: 'rgba(255, 255, 255, 1)' });
             
-            // // ASCII effect color
-            // if (asciiEffectElement) {
-            //     gsap.to(asciiEffectElement, {
-            //         color: '#ffffffff',
-            //         duration: CONFIG.animations.defaults.duration,
-            //         ease: CONFIG.animations.defaults.ease
-            //     });
-            // }
         }
     });
 }
