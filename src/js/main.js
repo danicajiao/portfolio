@@ -49,6 +49,9 @@ document.documentElement.style.opacity = '1';
 // Initialize page when loaded
 window.addEventListener('load', init);
 
+ // split elements with the class "split" into words and characters
+let aboutSplits = SplitText.create(".about-text p", { type: "words" });
+
 function init() {
     // Disable scroll initially until page is loaded
     document.body.style.overflow = 'hidden';
@@ -448,9 +451,6 @@ function initNavigation() {
         }
     });
 
-    // Add hover effect for logo
-    // const logo = document.querySelector('.logo a');
-
     logo.addEventListener('mouseenter', () => {
         gsap.to(logo, {
             color: CONFIG.colors.accent,
@@ -768,11 +768,11 @@ function initProjectHovers() {
             activeProjectId = projectId;
 
             // Hide nav
-            // gsap.to('.nav', {
-            //     opacity: 0,
-            //     duration: 0.6,
-            //     ease: 'power2.out'
-            // });
+            gsap.to('.nav', {
+                opacity: 0,
+                duration: 0.6,
+                ease: 'power2.out'
+            });
 
             // Hide all backgrounds
             document.querySelectorAll('.project-bg').forEach(projectBg => {
@@ -853,11 +853,11 @@ function initProjectHovers() {
             if (event.target.classList.contains('project-link') !== event.relatedTarget?.classList.contains('project-link')) {
                 // Reset state
                 // gsap.set('body', { backgroundColor: CONFIG.colors.bgPrimary });
-                // gsap.to('.nav', {
-                //     opacity: 1,
-                //     duration: 0.6,
-                //     ease: 'power2.out'
-                // });
+                gsap.to('.nav', {
+                    opacity: 1,
+                    duration: 0.6,
+                    ease: 'power2.out'
+                });
                 gsap.set(visuals, { opacity: 0 });
                 gsap.set(heroCanvas, { opacity: 1 });
             }
@@ -1258,7 +1258,8 @@ function initAnimations() {
 
     // About section elements
     // gsap.set('.about-image-wrapper', { scale: 0.8, opacity: 0 });
-    gsap.set('.about-text p', { y: 30, opacity: 0 });
+    // Text visibility handled by SplitText animation
+    gsap.set(aboutSplits.words, { opacity: 0 });
     gsap.set('.about-cta', { y: 30, opacity: 0 });
 
     // Skills section elements
@@ -1414,33 +1415,13 @@ function startPageAnimations() {
         start: 'top 70%'
     };
 
-    // gsap.to('.about-image-wrapper', {
-    //     scrollTrigger: aboutTrigger,
-    //     scale: 1,
-    //     opacity: 1,
-    //     duration: 1.2,
-    //     ease: 'back.out(1.5)'
-    // });
-
-    gsap.to('.about-text p', {
-        scrollTrigger: aboutTrigger,
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        stagger: 0.2,
-        ease: 'power3.out'
-    });
-
-    // split elements with the class "split" into words and characters
-    let split = SplitText.create(".about-text p", { type: "words, chars" });
-
-    // now animate the characters in a staggered fashion
-    gsap.from(split.words, {
+    // now animate the words in a staggered fashion
+    gsap.to(aboutSplits.words, {
         scrollTrigger: aboutTrigger,
         duration: 1, 
-        // y: 100,       // animate from 100px below
-        autoAlpha: 0, // fade in from opacity: 0 and visibility: hidden
-        stagger: 0.03, // 0.03 seconds between each
+        autoAlpha: 1, // fade in to visible
+        stagger: 0.05, // 0.05 seconds between each
+        ease: 'power3.out',
         onComplete: () => {
             gsap.to('.about-cta', {
                 y: 0,
