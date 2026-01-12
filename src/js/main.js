@@ -283,6 +283,12 @@ function initLoader() {
 function initCursor() {
   const cursor = document.querySelector('.cursor');
 
+  // Set transform origin for proper scaling
+  gsap.set(cursor, {
+    xPercent: -50,
+    yPercent: -50,
+  });
+
   document.addEventListener('mousemove', (e) => {
     gsap.to(cursor, {
       x: e.clientX,
@@ -313,7 +319,7 @@ function initCursor() {
   interactiveElements.forEach((el) => {
     el.addEventListener('mouseenter', () => {
       gsap.to(cursor, {
-        scale: 1.5,
+        scale: 2,
         duration: CONFIG.animations.defaults.duration,
       });
       // cursor.classList.add('hovered');
@@ -333,7 +339,8 @@ function initCursor() {
 function initNavigation() {
   // Navigation background change on scroll
   const nav = document.querySelector('.nav');
-  const navLinks = gsap.utils.toArray('.nav-link');
+  const navLinks = document.querySelector('.nav-links');
+  const navLinkItems = gsap.utils.toArray('.nav-link');
   const logo = document.querySelector('.logo a');
 
   // Set initial state for nav
@@ -379,7 +386,7 @@ function initNavigation() {
     start: 'top top+=50',
     end: 'bottom top+=50',
     onEnter: () => {
-      gsap.to([...navLinks, logo], {
+      gsap.to([...navLinkItems, logo], {
         color: CONFIG.isDarkMode
           ? CONFIG.colors.textPrimary
           : CONFIG.colors.textInverted,
@@ -388,14 +395,14 @@ function initNavigation() {
       });
     },
     onLeave: () => {
-      gsap.to([...navLinks, logo], {
+      gsap.to([...navLinkItems, logo], {
         color: CONFIG.colors.textPrimary,
         duration: 0.3,
         ease: CONFIG.animations.defaults.ease,
       });
     },
     onEnterBack: () => {
-      gsap.to([...navLinks, logo], {
+      gsap.to([...navLinkItems, logo], {
         color: CONFIG.isDarkMode
           ? CONFIG.colors.textPrimary
           : CONFIG.colors.textInverted,
@@ -404,7 +411,7 @@ function initNavigation() {
       });
     },
     onLeaveBack: () => {
-      gsap.to([...navLinks, logo], {
+      gsap.to([...navLinkItems, logo], {
         color: CONFIG.colors.textPrimary,
         duration: 0.3,
         ease: CONFIG.animations.defaults.ease,
@@ -460,6 +467,37 @@ function initNavigation() {
         ease: CONFIG.animations.defaults.ease,
       });
     }
+  });
+
+  // Close mobile menu when nav link is clicked
+  navLinkItems.forEach((link) => {
+    link.addEventListener('click', () => {
+      if (menuToggle.classList.contains('active')) {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+
+        const menuToggleSpans = gsap.utils.toArray('.menu-toggle span');
+
+        // Animate back to hamburger (X -> hamburger)
+        gsap.to(menuToggleSpans[0], {
+          rotate: 0,
+          y: 0,
+          duration: CONFIG.animations.defaults.duration,
+          ease: CONFIG.animations.defaults.ease,
+        });
+        gsap.to(menuToggleSpans[1], {
+          opacity: 1,
+          duration: CONFIG.animations.defaults.duration,
+          ease: CONFIG.animations.defaults.ease,
+        });
+        gsap.to(menuToggleSpans[2], {
+          rotate: 0,
+          y: 0,
+          duration: CONFIG.animations.defaults.duration,
+          ease: CONFIG.animations.defaults.ease,
+        });
+      }
+    });
   });
 
   logo.addEventListener('mouseenter', () => {
@@ -863,8 +901,8 @@ function initProjectHovers() {
     link.addEventListener('mouseleave', (event) => {
       projectHovered = false;
 
-      console.log(event.target);
-      console.log(event.relatedTarget);
+      console.debug(event.target);
+      console.debug(event.relatedTarget);
 
       gsap.killTweensOf('body');
       // gsap.killTweensOf(nav);
@@ -1484,27 +1522,31 @@ function startPageAnimations() {
   });
 
   // About section animations
-  const aboutTrigger = {
-    trigger: '.about',
-    start: 'top 70%',
-  };
+  const aboutTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.about',
+      start: 'top 70%',
+    },
+  });
 
   // now animate the words in a staggered fashion
-  gsap.to(aboutSplits.words, {
-    scrollTrigger: aboutTrigger,
-    duration: 1,
-    autoAlpha: 1, // fade in to visible
-    stagger: 0.05, // 0.05 seconds between each
-    ease: 'power3.out',
-    onComplete: () => {
-      gsap.to('.about-cta', {
+  aboutTimeline
+    .to(aboutSplits.words, {
+      duration: 1,
+      autoAlpha: 1, // fade in to visible
+      stagger: 0.05, // 0.05 seconds between each
+      ease: 'power3.out',
+    })
+    .to(
+      '.about-cta',
+      {
         y: 0,
         opacity: 1,
         duration: 1,
         ease: 'power3.out',
-      });
-    },
-  });
+      },
+      '-=0.5',
+    );
 
   // Skills section animations
   gsap.to('.skills-category', {
