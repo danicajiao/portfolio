@@ -7,7 +7,7 @@
     <title>danielcajiao | Software Engineer</title>
     <script>
         // FOUC Prevention - Run immediately before any CSS loads
-        (function () {
+        (() => {
             // Detect theme preference immediately
             const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -29,7 +29,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="description" content="Personal portfolio showcasing software engineering projects and skills">
 </head>
 
 <body>
@@ -43,7 +42,6 @@
 
     <!-- Custom Cursor -->
     <div class="cursor">
-        <!-- <div class="cursor-circle"></div> -->
         <div class="cursor-dot"></div>
     </div>
 
@@ -74,8 +72,7 @@
         </div>
         <div class="hero-content">
             <h1 class="hero-opener">
-                <span class="hero-title-line">Hello, I'm <span class="hero-title-highlight">Daniel<span
-                            style="color: black;">.</span></span></span>
+                <span class="hero-title-line">Hello, I'm <span class="hero-title-highlight">Daniel.</span></span>
             </h1>
             <h1 class="hero-title">
                 <span class="hero-title-line">Software Engineer &</span>
@@ -255,41 +252,6 @@
                                 </clipPath>
                             </defs>
                         </svg>
-                        <!-- <svg width="283" height="1040" viewBox="0 0 283 1040" style="border: 2px solid orange" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <radialGradient id="maskGradient">
-                                    <stop offset="0%" style="stop-color:white;stop-opacity:1" />
-                                    <stop offset="70%" style="stop-color:white;stop-opacity:0.5" />
-                                    <stop offset="100%" style="stop-color:white;stop-opacity:0" />
-                                </radialGradient>
-                            </defs>
-
-                            <mask id="circle-mask">
-                                <circle id="circle-svg" cx="0" cy="0" r="40" fill="url(#maskGradient)" />
-                            </mask>
-
-                            <path d="M141.5 1040V855C141.5 840 156.5 840 156.5 840H266.5C266.5 840 281.5 840 281.5 825V775C281.5 760 266.5 760 266.5 760H141.5" stroke="#747474" stroke-width="3"/>
-                            <path d="M141.5 760H16.5C16.5 760 1.5 760 1.5 745V695C1.5 680 16.5 680 16.5 680H266.5C266.5 680 281.5 680 281.5 665V615C281.5 600 266.5 600 266.5 600H141.5" stroke="#747474" stroke-width="3"/>
-                            <path d="M141.5 440H266.5C266.5 440 281.5 440 281.5 455V505C281.5 520 266.5 520 266.5 520H16.5C16.5 520 1.5 520 1.5 535V585C1.5 600 16.5 600 16.5 600H141.5" stroke="#747474" stroke-width="3"/>
-                            <path d="M141.5 440H16.5C16.5 440 1.5 440 1.5 425V375C1.5 360 16.5 360 16.5 360H266.5C266.5 360 281.5 360 281.5 345V295C281.5 280 266.5 280 266.5 280H141.5" stroke="#747474" stroke-width="3"/>
-                            <path d="M141.5 280H16.5C16.5 280 1.5 280 1.5 265V215C1.5 200 16.5 200 16.5 200H126.5C126.5 200 141.5 200 141.5 185V0" stroke="#747474" stroke-width="3"/>
-
-                            <g clip-path="url(#clip0_508_353)">
-                                <rect x="36.5" y="730" width="210" height="60" rx="10" fill="white"/>
-                                <circle cx="66.5" cy="760" r="15" fill="#D3AD3F" fill-opacity="0.5"/>
-                                <mask id="mask0_508_353" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="66" y="745" width="16" height="15">
-                                <path d="M66.5 745C74.7843 745 81.5 751.716 81.5 760H66.5V745Z" fill="black"/>
-                                </mask>
-                                <g mask="url(#mask0_508_353)">
-                                <circle cx="66.5" cy="760" r="15" fill="#D3AD3F"/>
-                                </g>
-                                <circle cx="66.5" cy="760" r="8.5" fill="#D3AD3F" stroke="white" stroke-width="4"/>
-                                <path d="M98.098 752.455H100.761L105.392 763.761H105.562L110.193 752.455H112.857V767H110.768V756.474H110.634L106.344 766.979H104.611L100.321 756.467H100.186V767H98.098V752.455ZM120.472 767.22C119.449 767.22 118.557 766.986 117.794 766.517C117.032 766.048 116.44 765.393 116.019 764.55C115.597 763.707 115.387 762.722 115.387 761.595C115.387 760.464 115.597 759.474 116.019 758.626C116.44 757.779 117.032 757.121 117.794 756.652C118.557 756.183 119.449 755.949 120.472 755.949C121.495 755.949 122.387 756.183 123.15 756.652C123.912 757.121 124.504 757.779 124.925 758.626C125.346 759.474 125.557 760.464 125.557 761.595C125.557 762.722 125.346 763.707 124.925 764.55C124.504 765.393 123.912 766.048 123.15 766.517C122.387 766.986 121.495 767.22 120.472 767.22ZM120.479 765.438C121.142 765.438 121.691 765.262 122.127 764.912C122.562 764.562 122.884 764.095 123.093 763.513C123.306 762.93 123.412 762.289 123.412 761.588C123.412 760.892 123.306 760.253 123.093 759.67C122.884 759.083 122.562 758.612 122.127 758.257C121.691 757.902 121.142 757.724 120.479 757.724C119.811 757.724 119.257 757.902 118.817 758.257C118.382 758.612 118.057 759.083 117.844 759.67C117.636 760.253 117.532 760.892 117.532 761.588C117.532 762.289 117.636 762.93 117.844 763.513C118.057 764.095 118.382 764.562 118.817 764.912C119.257 765.262 119.811 765.438 120.479 765.438ZM130.051 760.523V767H127.928V756.091H129.966V757.866H130.101C130.352 757.289 130.745 756.825 131.28 756.474C131.82 756.124 132.499 755.949 133.318 755.949C134.062 755.949 134.713 756.105 135.271 756.418C135.83 756.725 136.263 757.185 136.571 757.795C136.879 758.406 137.033 759.161 137.033 760.061V767H134.909V760.317C134.909 759.526 134.703 758.908 134.291 758.463C133.879 758.013 133.313 757.788 132.594 757.788C132.101 757.788 131.663 757.895 131.28 758.108C130.901 758.321 130.6 758.634 130.378 759.045C130.16 759.453 130.051 759.945 130.051 760.523ZM139.881 767V756.091H142.004V767H139.881ZM140.953 754.408C140.584 754.408 140.267 754.285 140.001 754.038C139.741 753.787 139.611 753.489 139.611 753.143C139.611 752.793 139.741 752.495 140.001 752.249C140.267 751.998 140.584 751.872 140.953 751.872C141.322 751.872 141.637 751.998 141.898 752.249C142.163 752.495 142.295 752.793 142.295 753.143C142.295 753.489 142.163 753.787 141.898 754.038C141.637 754.285 141.322 754.408 140.953 754.408ZM149.953 756.091V757.795H143.995V756.091H149.953ZM145.593 753.477H147.716V763.797C147.716 764.209 147.778 764.519 147.901 764.727C148.024 764.931 148.183 765.071 148.377 765.146C148.576 765.217 148.791 765.253 149.023 765.253C149.194 765.253 149.343 765.241 149.471 765.217C149.598 765.194 149.698 765.175 149.769 765.161L150.152 766.915C150.029 766.962 149.854 767.009 149.627 767.057C149.4 767.109 149.115 767.137 148.775 767.142C148.216 767.152 147.695 767.052 147.212 766.844C146.729 766.635 146.338 766.313 146.04 765.878C145.742 765.442 145.593 764.895 145.593 764.237V753.477ZM156.781 767.22C155.758 767.22 154.865 766.986 154.103 766.517C153.341 766.048 152.749 765.393 152.327 764.55C151.906 763.707 151.695 762.722 151.695 761.595C151.695 760.464 151.906 759.474 152.327 758.626C152.749 757.779 153.341 757.121 154.103 756.652C154.865 756.183 155.758 755.949 156.781 755.949C157.803 755.949 158.696 756.183 159.458 756.652C160.22 757.121 160.812 757.779 161.234 758.626C161.655 759.474 161.866 760.464 161.866 761.595C161.866 762.722 161.655 763.707 161.234 764.55C160.812 765.393 160.22 766.048 159.458 766.517C158.696 766.986 157.803 767.22 156.781 767.22ZM156.788 765.438C157.451 765.438 158 765.262 158.435 764.912C158.871 764.562 159.193 764.095 159.401 763.513C159.614 762.93 159.721 762.289 159.721 761.588C159.721 760.892 159.614 760.253 159.401 759.67C159.193 759.083 158.871 758.612 158.435 758.257C158 757.902 157.451 757.724 156.788 757.724C156.12 757.724 155.566 757.902 155.126 758.257C154.69 758.612 154.366 759.083 154.153 759.67C153.944 760.253 153.84 760.892 153.84 761.588C153.84 762.289 153.944 762.93 154.153 763.513C154.366 764.095 154.69 764.562 155.126 764.912C155.566 765.262 156.12 765.438 156.788 765.438ZM164.236 767V756.091H166.289V757.824H166.402C166.601 757.237 166.952 756.775 167.453 756.439C167.96 756.098 168.533 755.928 169.172 755.928C169.305 755.928 169.461 755.932 169.641 755.942C169.826 755.951 169.97 755.963 170.074 755.977V758.009C169.989 757.985 169.837 757.959 169.62 757.93C169.402 757.897 169.184 757.881 168.966 757.881C168.464 757.881 168.017 757.987 167.624 758.2C167.236 758.409 166.928 758.7 166.701 759.074C166.473 759.443 166.36 759.865 166.36 760.338V767H164.236Z" fill="black"/>
-                                <path d="M181.795 753.864V765.5H180.386V755.341H180.318L177.477 757.227V755.795L180.386 753.864H181.795ZM185.165 765.5V756.773H186.46V758.136H186.574C186.756 757.67 187.049 757.309 187.455 757.051C187.86 756.79 188.347 756.659 188.915 756.659C189.491 756.659 189.97 756.79 190.352 757.051C190.739 757.309 191.04 757.67 191.256 758.136H191.347C191.57 757.686 191.905 757.328 192.352 757.062C192.799 756.794 193.335 756.659 193.96 756.659C194.741 756.659 195.379 756.903 195.875 757.392C196.371 757.877 196.619 758.633 196.619 759.659V765.5H195.278V759.659C195.278 759.015 195.102 758.555 194.75 758.278C194.398 758.002 193.983 757.864 193.506 757.864C192.892 757.864 192.417 758.049 192.08 758.42C191.742 758.788 191.574 759.254 191.574 759.818V765.5H190.21V759.523C190.21 759.027 190.049 758.627 189.727 758.324C189.405 758.017 188.991 757.864 188.483 757.864C188.134 757.864 187.809 757.956 187.506 758.142C187.206 758.328 186.964 758.585 186.778 758.915C186.597 759.241 186.506 759.617 186.506 760.045V765.5H185.165ZM203.276 763.114V761.955L208.389 753.864H209.23V755.659H208.662L204.798 761.773V761.864H211.685V763.114H203.276ZM208.753 765.5V762.761V762.222V753.864H210.094V765.5H208.753ZM213.814 765.5V764.477L217.655 760.273C218.106 759.78 218.477 759.352 218.768 758.989C219.06 758.621 219.276 758.277 219.416 757.955C219.56 757.629 219.632 757.288 219.632 756.932C219.632 756.523 219.534 756.169 219.337 755.869C219.143 755.57 218.878 755.339 218.541 755.176C218.204 755.013 217.825 754.932 217.405 754.932C216.958 754.932 216.568 755.025 216.234 755.21C215.905 755.392 215.649 755.648 215.467 755.977C215.289 756.307 215.2 756.693 215.2 757.136H213.859C213.859 756.455 214.017 755.856 214.331 755.341C214.645 754.826 215.073 754.424 215.615 754.136C216.161 753.848 216.772 753.705 217.45 753.705C218.132 753.705 218.736 753.848 219.263 754.136C219.789 754.424 220.202 754.812 220.501 755.301C220.801 755.79 220.95 756.333 220.95 756.932C220.95 757.36 220.873 757.778 220.717 758.188C220.566 758.593 220.301 759.045 219.922 759.545C219.547 760.042 219.026 760.648 218.359 761.364L215.746 764.159V764.25H221.155V765.5H213.814ZM229.706 758.727L228.501 759.068C228.426 758.867 228.314 758.672 228.166 758.483C228.022 758.29 227.825 758.131 227.575 758.006C227.325 757.881 227.005 757.818 226.615 757.818C226.081 757.818 225.636 757.941 225.28 758.188C224.928 758.43 224.751 758.739 224.751 759.114C224.751 759.447 224.873 759.71 225.115 759.903C225.357 760.097 225.736 760.258 226.251 760.386L227.547 760.705C228.327 760.894 228.909 761.184 229.291 761.574C229.674 761.96 229.865 762.458 229.865 763.068C229.865 763.568 229.721 764.015 229.433 764.409C229.149 764.803 228.751 765.114 228.24 765.341C227.729 765.568 227.134 765.682 226.456 765.682C225.566 765.682 224.829 765.489 224.246 765.102C223.662 764.716 223.293 764.152 223.138 763.409L224.411 763.091C224.532 763.561 224.761 763.913 225.098 764.148C225.439 764.383 225.884 764.5 226.433 764.5C227.058 764.5 227.554 764.367 227.922 764.102C228.293 763.833 228.479 763.511 228.479 763.136C228.479 762.833 228.373 762.58 228.161 762.375C227.948 762.167 227.623 762.011 227.183 761.909L225.729 761.568C224.929 761.379 224.342 761.085 223.967 760.688C223.596 760.286 223.411 759.784 223.411 759.182C223.411 758.689 223.549 758.254 223.825 757.875C224.106 757.496 224.486 757.199 224.967 756.983C225.452 756.767 226.001 756.659 226.615 756.659C227.479 756.659 228.157 756.848 228.649 757.227C229.145 757.606 229.498 758.106 229.706 758.727Z" fill="#A3A3A3"/>
-                                <circle cx="246.5" cy="760" r="4.5" fill="#9A9A9A" stroke="white" stroke-width="3"/>
-                                <circle cx="36.5" cy="760" r="4.5" fill="#9A9A9A" stroke="white" stroke-width="3"/>
-                            </g>
-                        </svg> -->
                     </div>
                     <div id="cove-panel-left" class="panel">
                         <!-- Add left side content for Cove project -->
@@ -379,29 +341,23 @@
     <section id="about" class="about">
         <div class="container">
             <div class="about-content">
-                <div class="about-image">
-                    <div class="about-image-wrapper">
-                        <img src="./assets/images/profile-placeholder.jpg" alt="Your Name">
-                    </div>
-                </div>
                 <div class="about-text">
                     <h2 class="section-title">About Me</h2>
                     <p>
-                        Hello, I'm Daniel Cajiao. A software engineer passionate about building elegant solutions to
-                        complex problems. With a background in Enterprise CI/CD and Mobile Development, I focus on
+                        A results-driven software engineer from Fort Lauderdale, Florida, now living in Colorado,
+                        who's passionate about building elegant solutions to complex problems. With a background in Enterprise CI/CD and Mobile Development, focused on
                         creating intuitive and efficient applications that solve real-world challenges.
                     </p>
                     <p>
-                        When I'm not coding, I enjoy music and gaming. I believe that diverse experiences fuel
+                        Outside of coding, my interests include music and gaming. I believe diverse experiences fuel
                         creativity and innovation in tech.
                     </p>
                     <p>
-                        I'm currently working as a Software Engineer at Charles Schwab. Feel free to reach out if
-                        you'd like to collaborate or just chat about technology and innovation.
+                        I'm currently working as a Software Engineer at Charles Schwab developing Enterprise CI/CD solutions to support developers across the organization.
                     </p>
                     <div class="about-cta">
                         <a href="#contact" class="btn btn-primary">Get in Touch</a>
-                        <a href="./assets/resume.pdf" class="btn btn-secondary" download>Download CV</a>
+                        <a href="/Resume (Daniel Cajiao).pdf" class="btn btn-secondary" download>Download CV</a>
                     </div>
                 </div>
             </div>
@@ -418,19 +374,16 @@
                         <h3>Languages</h3>
                         <ul class="skills-list">
                             <li>JavaScript</li>
-                            <li>TypeScript</li>
                             <li>Python</li>
-                            <li>HTML5/CSS3</li>
-                            <li>SQL</li>
+                            <li>Swift</li>
+                            <li>Bash</li>
                         </ul>
                     </div>
                     <div class="skills-category">
                         <h3>Frameworks & Libraries</h3>
                         <ul class="skills-list">
-                            <li>React</li>
                             <li>Node.js</li>
-                            <li>Next.js</li>
-                            <li>Express</li>
+                            <li>SwiftUI</li>
                             <li>Three.js</li>
                             <li>GSAP</li>
                         </ul>
@@ -438,9 +391,9 @@
                     <div class="skills-category">
                         <h3>Tools & Platforms</h3>
                         <ul class="skills-list">
-                            <li>Git/GitHub</li>
+                            <li>GitHub Actions</li>
                             <li>Docker</li>
-                            <li>AWS</li>
+                            <li>GCP</li>
                             <li>Firebase</li>
                             <li>Figma</li>
                         </ul>
@@ -472,9 +425,8 @@
                         </div>
                     </div>
                     <div class="social-links">
-                        <a href="https://github.com/yourusername" target="_blank" class="social-link">GitHub</a>
-                        <a href="https://linkedin.com/in/yourusername" target="_blank" class="social-link">LinkedIn</a>
-                        <a href="https://twitter.com/yourusername" target="_blank" class="social-link">Twitter</a>
+                        <a href="https://github.com/danicajiao" target="_blank" class="social-link">GitHub</a>
+                        <a href="https://www.linkedin.com/in/daniel-cajiao-67184996" target="_blank" class="social-link">LinkedIn</a>
                     </div>
                 </div>
                 <div class="contact-form">
@@ -491,7 +443,11 @@
                             <label for="message">Message</label>
                             <textarea id="message" name="message" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Send Message</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">Send Message</span>
+                            <span class="btn-loading" style="display: none;">Sending...</span>
+                        </button>
+                        <div id="form-message" class="form-message"></div>
                     </form>
                 </div>
             </div>

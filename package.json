@@ -1,13 +1,17 @@
 {
   "name": "portfolio",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Personal portfolio with GSAP and Three.js animations",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "npm run check && vite build",
+    "preview": "vite preview",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "lint": "biome lint ."
   },
   "keywords": [
     "portfolio",
@@ -18,11 +22,12 @@
   "author": "Daniel Cajiao",
   "license": "ISC",
   "dependencies": {
-    "lenis": "^1.0.42",
     "gsap": "^3.13.0",
+    "lenis": "^1.0.42",
     "three": "^0.176.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
     "vite": "^6.3.5"
   }
 }
