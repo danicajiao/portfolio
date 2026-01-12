@@ -16,7 +16,6 @@ This is a modern, interactive portfolio website built with GSAP animations and T
 - HTML5, CSS3, JavaScript
 - GSAP (GreenSock Animation Platform)
 - Three.js for 3D graphics and WebGL
-- Lenis for smooth scrolling
 - Vite as the development server and build tool
 
 ## Getting Started
@@ -44,7 +43,7 @@ Run the development server:
 npm run dev
 ```
 
-This will start the development server at http://localhost:3000
+This will start the development server at http://localhost:5173
 
 ### Building for Production
 
@@ -68,19 +67,24 @@ npm run preview
 
 ```
 portfolio/
-├── public/                 # Static assets
+├── public/                          # Static assets
 ├── src/
-│   ├── index.html          # Main HTML file
+│   ├── index.html                   # Main HTML file
 │   ├── js/
-│   │   ├── main.js         # Main JavaScript file with GSAP and Three.js
+│   │   ├── main.js                  # Main JavaScript file with GSAP and Three.js
+│   │   └── project-link-animations.js  # Project hover animations
 │   ├── styles/
-│   │   ├── main.css        # Main stylesheet
-│   ├── assets/
-│   │   ├── images/         # Image assets
-│   │   ├── models/         # 3D models (if any)
-│   │   └── fonts/          # Custom fonts
-├── package.json            # Project dependencies and scripts
-└── vite.config.js          # Vite configuration
+│   │   ├── main.css                 # Main stylesheet
+│   │   ├── cove-styles.css          # Cove project-specific styles
+│   │   ├── schwab-styles.css        # Schwab project-specific styles
+│   │   └── schwapp-styles.css       # SchwApp project-specific styles
+│   ├── components/                  # Component files
+│   └── assets/
+│       ├── images/                  # Image assets
+│       └── files/                   # Document assets
+├── biome.json                       # Biome formatter/linter configuration
+├── package.json                     # Project dependencies and scripts
+└── vite.config.js                   # Vite configuration
 ```
 
 ## License
@@ -91,4 +95,3 @@ MIT License
 
 - GSAP by GreenSock
 - Three.js
-- Lenis by Studio Freight
