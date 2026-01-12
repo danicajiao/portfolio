@@ -357,7 +357,7 @@
                     </p>
                     <div class="about-cta">
                         <a href="#contact" class="btn btn-primary">Get in Touch</a>
-                        <a href="Daniel-Cajiao-Resume.pdf" class="btn btn-secondary" download="Daniel-Cajiao-Resume.pdf">Download CV</a>
+                        <a id="cv-download" href="/Daniel-Cajiao-Resume.pdf" class="btn btn-secondary" download="Daniel-Cajiao-Resume.pdf">Download CV</a>
                     </div>
                 </div>
             </div>
@@ -491,6 +491,14 @@
         </div>
     </div>
 
+    <script type="module">
+        // Set correct PDF path based on base URL
+        const baseUrl = import.meta.env.BASE_URL || '/';
+        const cvLink = document.getElementById('cv-download');
+        if (cvLink) {
+            cvLink.href = `${baseUrl}Daniel-Cajiao-Resume.pdf`;
+        }
+    </script>
     <script type="module" src="./js/main.js"></script>
 </body>
 
