@@ -1,6 +1,6 @@
 {
   "name": "portfolio",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Personal portfolio with GSAP and Three.js animations",
   "main": "index.js",
   "type": "module",
